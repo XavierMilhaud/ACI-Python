@@ -1,0 +1,21 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 04-Jun-1999
+Values for 1994 were revised on 4 June 1999
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 06-Dec-1999
+The RLR datums for both Stanley I (863/001) and Stanley II (863/002)
+have been set to be 10.7 m below benchmark A which is the same as 12.83 m below
+the PWD Office BM. The two RLR series can be combined if required
+although there is a large passage of time between them.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-Sep-2005
+Sea level changes at Port Stanley are discussed by
+Woodworth, P.L., Pugh, D.T., Meredith, M.P. and Blackman, D.L. 2005.
+Sea level changes at Port Stanley, Falkland Islands. Journal
+of Geophysical Research, Vol. 110, C06013, doi:10.1029/2004JC002648.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 19-Dec-2013
+All data from October 1992 onwards were obtained from various B gauges (a form of accurate pressure tide gauge) located at the east end of Stanley harbour. However, data for October 2008 - April 2012 were obtained from a Kalesto radar tide gauge installed at the same location.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 09-May-2022
+RLR factors for November and December 1998, and November and December 2005 were changed incorrectly in 2014: this change has been reverted. Maintenance at the site was carried out in both October 1998 and 2005, and in both cases the datum was changed. However, at the time the PSMSL database could only accommodate one RLR factor per year, so the heights for the remainder of the year were adjusted to the original datum.
+
+In 2014 the database had been updated to allow RLR factors to be applied to each month, and on reviewing the site metadata we applied the new datum to the November and December values in both years, thus erroneously applying the adjustment for the datum shift twice.
+
+We've reverted the change back to the original scheme applying the datum shift at the end of the year to preserve the data as supplied at the time. Note however the labels in the RLR diagram still refer to a datum shift in November to match maintenance records.
+

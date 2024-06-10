@@ -1,0 +1,24 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 11-Jun-1991
+Granger Bay         430/045 RLR(1968) is 10.4m below BM1
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 12-Jul-1993
+Not a good looking record with several possible datum shifts.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 28-Aug-1996
+For discussions of MSL changes and extreme sea levels around Namibia and South Africa, see: G.B. Brundrit, S.Afr.J.Mar.Sci.,16,9-17,1995 and S. Searson and G.B. Brundrit, S.Afr.J.of Science, 91,579-588,1995. 1967-1972 values based on 8 readings per day
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 24-Sep-2009
+Heights of chart datum relative to land levelling datum in South Africa and Namibia: Granger Bay Cape Town Datum: up to 31st Dec 1978 = -0.829 Datum: 1st Jan 1979 - 31st Dec 1997 = -0.900
+Datum: 1st Jan 1998 - 31st Dec 2002 = -0.975 Datum: 1st Jan 2003 onwards = -0.825 Datum is now LAT so unlikely to change.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 11-May-2010
+There appears to be a spike in the dataset for November 2002. This is possibly real as a spike appears in Nov/Dec 2002 in several of the S. African stations.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-May-2015
+The apparent spike in the monthly value for May 2014 was queried with the data suppliers. It was confirmed that the value was correct and was probably due to meteorological effects as the weather was described as 'shocking' with very strong onshore winds.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 10-May-2016
+The apparent rise in sea level from June 2015 has been queried with the South African Navy. They have replied that there is quite a bit of seaweed growth in the area which may be contributing and intend to arrange for divers to cut this back. However, the data levels compare well with the predictions.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 30-Oct-2019
+After the entry of the 2018 data the period for June 2015-December 2016 was flagged. Refer to the above comment. The 2018 data looks good.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 05-Nov-2019
+Following instructions from SANHO an adjustment of -25cm has been made to the data for the period May 2015 until February 2018. This follows a system recalibration exercise during February 2018.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 07-Nov-2019
+The South African Navy Hydrographic Office (SANHO) are the copyright owners of the Cape Town (Granger Bay) sea level data and must be contacted to request permission to use the data.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 10-Feb-2021
+"The South African Hydrographic Office have asked us to remove this record in line with the Hydrographic Act of 2019 (Act No. 35 of 2019) and the South African Spatial Data Infrastructure Act, 2003 (Act No. 54 of 2003). The data can be obtained directly from SANHO (email: hydrosan@iafrica.com)
+

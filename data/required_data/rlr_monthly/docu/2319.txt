@@ -1,0 +1,14 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 23-Nov-2016
+Tweed Entrance South is a new replacement station for Tweed Heads (id. 2314) which has  been decommissioned for safety reasons. Tweed Entrance South has not been levelled into the Tweed Heads site. Using information supplied Tweed Entrance South has been made RLR. Primary benchmark is PM182920 3.087m above the Tweed River Hydro Datum.
+Sensor is a Radar.
+
+Data General Release Conditions
+The data provided below is supplied subject to the following conditions:
+
+© Crown in right of New South Wales
+The data supplied is licensed under a Creative Commons Attribution 4.0 licence.
+To view a copy of this licence visit:  http://creativecommons.org/licenses/by/4.0 and
+http://creativecommons.org/licenses/by/4.0/legalcode
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 19-Feb-2019
+You are free to copy distribute display and perform the work, to make derivative works and to make commercial use of the work under the following conditions attributing the data to "NSW Office of Environment and Heritage" in any publications
+

@@ -1,0 +1,7 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 15-Jul-2014
+The 'Metric' data for the period 1957-1959 was supplied by the UK National Institute of Oceanography (NIO).
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 07-Nov-2018
+Data from 2008 onward has been supplied by the National Oceanography Centre.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 10-Dec-2019
+The Station Leader at KEP has informed the PSMSL that the wharf where the tide gauge is located is to be re-built. Work is scheduled to begin in January 2020 with the construction team expanding the size of the wharf over a period of approximately 5 months
+

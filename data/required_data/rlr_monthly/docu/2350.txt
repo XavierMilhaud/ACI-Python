@@ -1,0 +1,5 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 17-May-2018
+Samcheonpo is a new station supplied by KHOA
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 15-May-2019
+This station is a duplicate of ID 2318 and was added in error. It will not be updated further.
+

@@ -1,0 +1,13 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 11-Jun-1991
+Soma                642/036 RLR(1974) is 11.0m below BM Attach-27
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 17-Nov-2009
+The relevant authority for this station is the Geographical Survey Institute. For some reason the data for 1998 was not downloaded from this authority. Data downloaded and entered 17.11.09.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 22-Feb-2012
+A massive earthquake of magnitude 9.0 occurred at 14.46 JST (05.46 UTC) on Friday 11th March 2011 with the epicentre situated approx. 70km east of the Oshika Peninsula of Tohoku. It was the largest earthquake to strike Japan and triggered a tsunami with waves of up to 40.5m and travelling inland up to 10km. 
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 13-Mar-2014
+The GPS benchmark information has been downloaded from the SONEL website. GPS benchmark P106 is 14.116m above RLR.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 05-Apr-2022
+Following review of data affected by the Tōhoku earthquake of 2011, all data has been flagged as good as GSI have recommenced levelling at the site. The station flag has been set to indicate the record needs to be treated with care, but the data appears to accurately reflect the earthquake's ongoing effect on local relative sea level.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 26-Apr-2022
+Documentation from the GSI confirms this installation was destroyed in the tsunami following the Tōhoku earthquake in March 2011. A temporary gauge was set up in June 2011, and a new permanent installation began operating in September 2015. Data from the temporary site have not been connected to the primary benchmark through levelling, so this period is not included in the RLR dataset.
+

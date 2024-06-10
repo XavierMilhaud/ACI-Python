@@ -1,0 +1,5 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 28-Mar-2019
+Sevilla 2 is a new station and replaces station id. 2047 Sevilla-Esclusa. The gauge is a Vega radar sensor.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 28-Mar-2019
+The apparent spike in the data for March/April 2013 has been confirmed as a real event. The cause is an extreme rain/river flood event as the station is 80km up the river Guadalquivir. This event happens from time to time and was also apparent in the previous dataset id. 2047.
+

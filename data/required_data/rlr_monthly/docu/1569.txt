@@ -1,0 +1,7 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 02-May-1995
+Station density along some sections of the Australian coast has meant that station codes 601 onwards have been re-ordered compared to those in earlier versions of the PSMSL data set.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 24-Aug-2010
+Data supplier confirmed tide gauge benchmark PSM 8295 is 5.103 m above tide gauge zero (LAT). RLR (2009) has been defined as 10.2 m above PSM 8295
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 05-Feb-2021
+Last data available from the NTC for station Shute Harbour 2 is that for March 2018.
+

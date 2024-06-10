@@ -1,0 +1,5 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 28-Jul-2016
+Langosteira is a new REDMAR station.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 11-Jul-2023
+There was local subsidence of the quay in 2022 - corrected values will be provided
+

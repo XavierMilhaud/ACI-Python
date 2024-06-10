@@ -1,0 +1,5 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 10-Nov-2015
+Mausund is a new station.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 23-Jan-2020
+Using information supplied station Mausund has been made RLR. However, PSMSL has been informed that the tide gauge is sinking by 1.1mm/year. The data supplied to the PSMSL is corrected for this subsidence.
+

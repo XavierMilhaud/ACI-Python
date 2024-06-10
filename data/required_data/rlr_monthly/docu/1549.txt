@@ -1,0 +1,14 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 02-May-1995
+Station density along some sections of the Australian coast has meant that station codes 601 onwards have been re-ordered compared to those in earlier versions of the PSMSL data set.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-May-1996
+Revised data 1982-1986 received from the National Tidal Centre, Bureau of Meteorology, South Australia
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 23-Aug-2010
+Supplying authority have confirmed that for data after 9/10/1982, vertical datum is Chart Datum. Primary benchmark A 958 is 7.477 m above Chart Datum. RLR (2008) defined as 11.6 m below
+A 958
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 14-Mar-2013
+The reference datum for King Bay changed from Chart Datum to Lowest Astronomical Tide (LAT) on 01/01/2009. The difference between the two is 0.12m the RLR factor has changed.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 19-Aug-2013
+Following a recent download of data for King Bay from the NTC website it was noticed that the data for 2008 had been revised. This data has now been re-loaded onto the database.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 16-Mar-2020
+A comparison of data with that currently available from the Bureau of Meteorology shows the switch in datum to LAT occurred at the start of 2008, not 2009 (hence the correction of 2008 data made in 2013).
+

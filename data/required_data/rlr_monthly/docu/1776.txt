@@ -1,0 +1,7 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 02-May-1995
+Station density along some sections of the Australian coast has meant that station codes 601 onwards have been re-ordered compared to those in earlier versions of the PSMSL data set.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 29-Oct-2014
+This station cannot be made RLR as no datum information is available from the National Tidal Centre.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 05-Feb-2021
+When downloading the data from the NTC it was found that data for Queenscliff had been revised for the period 2016-2019.
+

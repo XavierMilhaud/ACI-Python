@@ -1,0 +1,10 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 11-Jun-1991
+Porto Corsini       270/035 RLR(1971) is 7.9m below BM
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 14-Jul-1994
+For a discussion of submergence near to Porto Corsini see Emery and Aubrey (Sea Levels, Land Levels and Tide Gauges), 1991, Springer-Verlag, page 34.
+Porto Corsini is an historic station. Last data 1972
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-Nov-2020
+Data 1969-1972 is based on Ferraro, S. (1972). Livelli marini adriatici e ionici rilevati alle stazioni mareografiche italiane. Atti Accad. Ligure Sc. Lett., XXIX, 3-18.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-Nov-2020
+Data for 1896-1966 based on historic sources, details of which can be found in Bruni et al. (2019), J Geod 93, 1227-1244. https://doi.org/10.1007/s00190-019-01238-w. Data from that paper is published in ID 2361, which should be considered as superseding this record
+

@@ -1,0 +1,3 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 13-Jun-2019
+Sydney Port Jackson is a new Manly Hydraulics Laboratory (MHL) station situated at HMAS Penguin Naval base. Using firgures supplied by MHL the station has been made RLR. Sensor is a Radar BM PM174508 is 24.706m above Datum Zero Fort Denison.
+

@@ -1,0 +1,1 @@
+Add 3.102m to all data values to refer to RLR<br>RLR is 14.900m below primary benchmark 231-06

@@ -1,0 +1,5 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 11-Dec-2012
+Makar, General Santos City is a newly supplied station. Primary benchmark BM 2 6.076m above datum TSO 1990. Gauge type OTT THALIMEDES
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 08-Oct-2019
+Following a data query revised values have been supplied for 2017 General Santos City
+

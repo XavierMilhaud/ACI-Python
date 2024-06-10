@@ -1,0 +1,5 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 21-Jun-2016
+Data for Leava on the Wallis and Futuna Island has only recently been added to the database. There are very short periods of data for August-September 1986, May 1997 and then from May 2013 onwards.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 07-Aug-2019
+Using station information from the SHOM website the station has been made RLR. However, instead of a Benchmark name there is a description of the tide gauge. Because of this the Benchmark name has been entered on the RLR diagram TGBM.
+

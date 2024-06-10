@@ -1,0 +1,6 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 24-Jan-2017
+Porvoo is a new Finnish station with data beginning in August 2014.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 27-Nov-2019
+From 2018 onwards the averages of the Finnish sea level data will be based on 1 min observations. Values are calculated in Finnish normal time (EET).
+The data are relative to the reference surface of the Finnish sea level observations and thus the datum is the tide gauge zero.
+

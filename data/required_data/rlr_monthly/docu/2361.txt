@@ -1,0 +1,9 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-Nov-2020
+The record consists of data recovered from historical documents, as described by Bruni et al (2019), Journal of Geodesy, Volume 93, Issue 8, pp.1227-1244. DOI 10.1007/s00190-019-01238-w
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-Nov-2020
+Data from 1873-1922 have been digitised from handwritten volumes and are based on daily high and low waters - as a result the values are mean tide level (MTL). Values for 1873-1896 have never previously been published, 1896-1922 were previously published only as monthly means (see ID 100).
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-Nov-2020
+Data for 1934-1979 come from the Annali Idroligici (http://www.acq.isprambiente.it/annalipdf/). Values from 1971 onwards are mean sea level (MSL), but it is unknown whether 1934-1970 data are MSL or MTL. There is no information about the number of missing days per month over this period.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 20-Nov-2020
+MTL - MSL is estimated to be 0.5 +/- 0.2 cm, based on 1971-2011 period (Zerbini et al., 2017, Earth-Science Reviews, 167:72-87, https://doi.org/10.1016/j.earscirev.2017.02.009)
+

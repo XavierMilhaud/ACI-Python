@@ -1,0 +1,5 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 14-Jul-2015
+Data for Nuku Hiva is now downloaded from SHOM. Although still a UH gauge SHOM work very closely with UH with the maintenance and running of the gauge. When the SHOM data for Nuku Hiva is plotted against the UH data the data plots differ. This is probably due to a time shift that was wrongly applied after 2004. SHOM are aware of the problem and the data will be revised as soon as possible.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 06-Aug-2019
+The gauge is operated by the University of Hawaii Sea Level Center, who provide the record ID 1555. This record is a duplicate of that one, with the exception that the data is obtained from SONEL (via SHOM). This record will not be updated in the future - record 1555 should be used instead. One last update was applied so the data matches that available on the SONEL website, correcting the errors mentioned in the previous comment.
+

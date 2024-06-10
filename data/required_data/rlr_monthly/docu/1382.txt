@@ -1,0 +1,3 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 10-Oct-1994
+Data discontinued as observations are thought to be distorted and the site of the gauge does not give true sea level observations.
+

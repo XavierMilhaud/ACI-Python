@@ -1,0 +1,1 @@
+Add 4.362m to data values 1887-1922 to refer to RLR<br>Add 8.721m to data values 1923-1936 to refer to RLR<br>Add 4.731m to data values 1937-1999 to refer to RLR<br>Add 0.300m to data values 2000 onwards to refer to RLR<br>RLR is 10.300m below primary benchmark BM c

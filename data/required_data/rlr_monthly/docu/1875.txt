@@ -1,0 +1,5 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 29-Mar-2022
+JMA have confirmed that the station was moved in February 2020
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 22-Aug-2022
+Prior to the relocation of the site in February 2020, measured sea level, was substantially affected by wave setup, producing a suppression in tidal amplitudes in winter when swell is largest, and altering the seasonal cycle. The new site of the gauge appears to not be affected by wave setup, although there is currently insufficient data to be certain. For details, see "Wave setup at the Minamitorishima tide gauge" by Ray et al. (2022), https://doi.org/10.1007/s10872-022-00659-0
+

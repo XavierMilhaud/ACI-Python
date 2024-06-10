@@ -1,0 +1,4 @@
+Apparent datum shift between earlier and later part of the record
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 11-Jun-1991
+Alicante 1  RLR(1965) is 10.4m below BM NP1. This tide gauge is situated in the outer harbour area.
+

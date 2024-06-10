@@ -1,0 +1,12 @@
+1942-1944 Data supplied by B.O.D.C.
+1960-1963 Data supplied by National Geographical Institute, France
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 11-Jun-1991
+St Jean-de-Luz      190/141 RLR(1979) is 9.9m below RepereA(1976)
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 22-Jul-1993
+height shift of approx 15cm in May 1991
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 04-Apr-2012
+Title of the station has been changed from Socoa/ St. Jean de Luz to St. John de Luz (Socoa). Primary benchmark is now IGN no O.A.K3L3-4 II 7.975m above TGZ.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 07-Feb-2023
+Recent investigations have indicated that the 1942-1944 data come from a wartime German installation from the other side of the Socoa bay. The data are consistent with the rest of the record based on tidal analysis. See "Extension of high temporal resolution sea level time series at Socoa
+(Saint Jean-de-Luz, France) back to 1875", https://doi.org/10.5194/essd-2022-443
+

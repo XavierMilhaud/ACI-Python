@@ -1,0 +1,7 @@
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 30-Apr-2002
+All Turkish gauges non-operational by late 1970's early 1980's according to report 'Sea level monitoring activities in Turkey' report May 2000.
+=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 23-Jul-2019
+Scientists from a number of German Environmental and Geoscience Institutes have published a paper in the Journal of Geophysical Research (JGR-Oceans) describing the analysis of data from Antalya, Eastern Mediterranean. MSL data from Antalya (id.400) has been merged with Antalya II (id.1681).In the analysis ‘Metric’ data from Antalya I has been aligned with the RLR dataset from Antalya II. The paper includes the full history of the station and the data itself. View the paper at the link:-
+https://doi.org/10.1029/2018JC013906
+
+

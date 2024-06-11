@@ -1,3 +1,0 @@
-=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 31-Oct-1995
-tide gauge has not been adjusted for air pressure
-

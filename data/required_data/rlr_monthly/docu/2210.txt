@@ -1,3 +1,0 @@
-=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 13-Feb-2014
-Isabel Segunda is on the small island of Vieques off Puerto Rico. Data for this station has been newly downloaded from the NOAA site. Currently ther is no benchmark/datum information for this station so it remains 'Metric'.
-

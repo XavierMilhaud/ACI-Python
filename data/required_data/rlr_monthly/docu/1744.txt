@@ -1,4 +1,0 @@
-=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 13-Nov-1996
-data received via UHSLC
-gauge type= OTT
-

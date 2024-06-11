@@ -1,5 +1,0 @@
-=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 15-Nov-1993
-DATA RECEIVED FROM TOGA OFFICE
-=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 15-Oct-1996
-instrument type: float and well type gauge (Munro)
-

@@ -1,2 +1,0 @@
-These data are values of MTL based on high and low waters. Metric data measured to Normal Null(NN)
-

@@ -1,4 +1,0 @@
-=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 28-Nov-1996
-data received from UH SLC
-gauge type= Aanderaa, WLR-7
-

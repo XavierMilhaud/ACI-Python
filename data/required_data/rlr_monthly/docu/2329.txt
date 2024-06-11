@@ -1,3 +1,0 @@
-=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 15-Feb-2017
-Redwood City California is a new NOAA station. This has been added to the database to give additional comparison stations.
-

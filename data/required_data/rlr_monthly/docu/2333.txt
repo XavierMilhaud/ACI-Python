@@ -1,3 +1,0 @@
-=========================== FOLLOWING PSMSL DOCUMENTATION ADDED 28-Mar-2017
-L'Herbaudiere is a new station downloaded from the SONEL website.
-

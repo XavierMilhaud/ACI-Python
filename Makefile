@@ -13,3 +13,6 @@ clean:
 	# Afficher un message de succès
 	@echo -e "\033[32mNettoyage terminé avec succès\033[0m"
 
+run:
+	# Exécuter tous les tests dans ./tests
+	PYTHONWARNINGS="ignore::DeprecationWarning,ignore::PendingDeprecationWarning,ignore::FutureWarning" python -m unittest discover -s ./tests

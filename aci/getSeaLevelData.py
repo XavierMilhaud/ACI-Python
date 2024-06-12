@@ -4,6 +4,53 @@ import os
 import shutil
 import pandas as pd
 import argparse
+import requests
+import zipfile
+
+
+# On rajoute à ce fichier un petit script python 
+# pour télécharger des données sur le niveau de la 
+# mer dans le cas où elles n'existent pas. 
+
+
+# URL du fichier à télécharger
+url = "https://psmsl.org/data/obtaining/rlr.monthly.data/rlr_monthly.zip"
+
+# Chemin vers le répertoire de destination
+destination_dir = "../data/required_data"
+zip_file_path = os.path.join(destination_dir, "rlr_monthly.zip")
+extract_path = os.path.join(destination_dir, "rlr_monthly")
+
+# Vérifie si le dossier rlr_monthly existe déjà
+if not os.path.exists(extract_path):
+    # Crée le répertoire de destination s'il n'existe pas
+    os.makedirs(destination_dir, exist_ok=True)
+    
+    # Télécharge le fichier
+    #print("Téléchargement du fichier...")
+    response = requests.get(url)
+    with open(zip_file_path, 'wb') as file:
+        file.write(response.content)
+    #print("Téléchargement terminé.")
+
+    # Décompresse le fichier
+    #print("Décompression du fichier...")
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        zip_ref.extractall(destination_dir)
+    #print("Décompression terminée.")
+
+    # Supprime le fichier zip après extraction
+    os.remove(zip_file_path)
+    #print("Fichier zip supprimé.")
+else:
+    print("Le dossier rlr_monthly existe déjà. Aucune action nécessaire.")
+
+
+
+
+
+
+
 
 # Load the DataFrame A
 # Assuming A is a CSV file, replace 'path_to_dataframe.csv' with the actual path to your CSV

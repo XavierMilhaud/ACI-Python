@@ -82,8 +82,8 @@ class SeaLevelComponent:
                 dataframes.append(temp_data)
 
         combined_data = pd.concat(dataframes, axis=1)
-        print(f"Loaded data from {len(dataframes)} files.")
-        print("Data range:", combined_data.index.min(), "-", combined_data.index.max())
+        #print(f"Loaded data from {len(dataframes)} files.")
+        #print("Data range:", combined_data.index.min(), "-", combined_data.index.max())
         return combined_data
 
     def correct_date_format(self, data):
@@ -122,8 +122,8 @@ class SeaLevelComponent:
                 corrected_dates.append(np.nan)
 
         data['Corrected_Date'] = pd.to_datetime(corrected_dates, errors='coerce')
-        print("Corrected dates:")
-        print(data['Corrected_Date'].head(10))  # Debug print to see the first few corrected dates
+        #print("Corrected dates:")
+        #print(data['Corrected_Date'].head(10))
 
         data.dropna(subset=['Corrected_Date'], inplace=True)
         data.set_index('Corrected_Date', inplace=True)
@@ -214,7 +214,7 @@ class SeaLevelComponent:
         min_year = int(data_study.index.year.min())
         max_year = int(data_study.index.year.max()) + 1
 
-        print(f"Min year: {min_year}, Max year: {max_year}")
+        #print(f"Min year: {min_year}, Max year: {max_year}")
 
         for year in range(min_year, max_year):
             for month in range(1, 13):
@@ -235,16 +235,16 @@ class SeaLevelComponent:
             The fully processed and standardized DataFrame.
         """
         sea_level_data = self.load_data()
-        print("Original Data:")
-        print(sea_level_data.head())
+        #print("Original Data:")
+        #print(sea_level_data.head())
 
         sea_level_data = self.correct_date_format(sea_level_data)
-        print("Data after date correction:")
-        print(sea_level_data.head())
+        #print("Data after date correction:")
+        #print(sea_level_data.head())
 
         sea_level_data = self.clean_data(sea_level_data)
-        print("Data after cleaning:")
-        print(sea_level_data.head())
+        #print("Data after cleaning:")
+        #print(sea_level_data.head())
 
         monthly_means = self.compute_monthly_stats(sea_level_data, self.reference_period, "means")
         monthly_std_devs = self.compute_monthly_stats(sea_level_data, self.reference_period, "std")

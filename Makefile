@@ -15,4 +15,4 @@ clean:
 
 run:
 	# Exécuter tous les tests dans ./tests
-	PYTHONWARNINGS="ignore::DeprecationWarning,ignore::PendingDeprecationWarning,ignore::FutureWarning" python -m unittest discover -s ./tests
+	cd tests && PYTHONWARNINGS="ignore::DeprecationWarning,ignore::PendingDeprecationWarning,ignore::FutureWarning" python -m unittest discover -s .

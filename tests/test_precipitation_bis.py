@@ -5,14 +5,13 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-
 import precipitationcomponent as pc
 
 class TestIntegrationPrecipitationComponent(unittest.TestCase):
 
     def setUp(self):
-        self.reference_period = ('1960-01-01', '1965-12-31')
-        self.data_dir = '../data/tests_data/tests_data_prec'
+        self.reference_period = ('2000-01-01', '2000-12-31')
+        self.data_dir = '../data/tests_data/tests_data_prec_bis'
 
     def test_calculate_monthly_max_anomaly(self):
         test_cases = ['test1', 'test2', 'test3', 'test4']
@@ -37,4 +36,3 @@ class TestIntegrationPrecipitationComponent(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

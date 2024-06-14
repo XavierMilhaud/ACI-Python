@@ -86,6 +86,7 @@ class SeaLevelComponent:
         #print("Data range:", combined_data.index.min(), "-", combined_data.index.max())
         return combined_data
 
+
     def correct_date_format(self, data):
         """
         Corrects the date format from a specific float representation to YYYY-MM-DD.
@@ -118,17 +119,22 @@ class SeaLevelComponent:
                     corrected_dates.append(corrected_date)
                 else:
                     corrected_dates.append(np.nan)
-            except (ValueError, IndexError) as e:
+            except (ValueError, IndexError):
                 corrected_dates.append(np.nan)
 
-        data['Corrected_Date'] = pd.to_datetime(corrected_dates, errors='coerce')
-        #print("Corrected dates:")
-        #print(data['Corrected_Date'].head(10))
+        # Utiliser pd.concat pour ajouter les nouvelles colonnes en une seule opération
+        corrected_dates_series = pd.to_datetime(corrected_dates, errors='coerce')
+        new_data = pd.concat([data, pd.Series(corrected_dates_series, name='Corrected_Date', index=data.index)], axis=1)
 
-        data.dropna(subset=['Corrected_Date'], inplace=True)
-        data.set_index('Corrected_Date', inplace=True)
-        data.sort_index(inplace=True)  # Ensure the dates are sorted
-        return data
+        # Suppression des lignes avec des dates non valides
+        new_data.dropna(subset=['Corrected_Date'], inplace=True)
+        new_data.set_index('Corrected_Date', inplace=True)
+        new_data.sort_index(inplace=True)  # Ensure the dates are sorted
+        return new_data
+
+
+
+
 
     def clean_data(self, data):
         """

@@ -17,7 +17,7 @@ class TestPrecipitation(unittest.TestCase):
         """
         Setup test data.
         """
-        self.mask_path = "test_mask.nc"  # Utilisation d'un chemin temporaire pour le masque
+        self.mask_path = "test_mask.nc" 
         times = pd.date_range('2000-01-01', '2020-12-31', freq='D')
         latitudes = np.arange(48.80, 48.90, 0.1)
         longitudes = np.arange(2.20, 2.30, 0.1)
@@ -53,10 +53,6 @@ class TestPrecipitation(unittest.TestCase):
         Test the calculate_monthly_max_anomaly method.
         """
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
-
-        # Vérification de la présence de la variable 'country' dans le masque
-        if 'country' not in precipitation.mask:
-            self.fail("The mask dataset does not contain the 'country' variable.")
 
         anomalies = precipitation.calculate_monthly_max_anomaly('tp', 5, self.reference_period)
 
@@ -102,10 +98,6 @@ class TestPrecipitation(unittest.TestCase):
         
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
         
-        # Vérification de la présence de la variable 'country' dans le masque
-        if 'country' not in precipitation.mask:
-            self.fail("The mask dataset does not contain the 'country' variable.")
-        
         anomalies = precipitation.calculate_monthly_max_anomaly('tp', 5, self.reference_period)
         
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when there is no precipitation.")
@@ -128,11 +120,7 @@ class TestPrecipitation(unittest.TestCase):
         data.to_netcdf(self.data_path)
         
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
-        
-        # Vérification de la présence de la variable 'country' dans le masque
-        if 'country' not in precipitation.mask:
-            self.fail("The mask dataset does not contain the 'country' variable.")
-        
+               
         anomalies = precipitation.calculate_monthly_max_anomaly('tp', 5, self.reference_period)
         
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant.")

@@ -19,7 +19,11 @@ It is possible to run the current tests implemented by processing :
 ```bash
 make run
 ```
-If you have 2 errors, it is normal. It is a file path issue that I will solve later. 
+For a faster execution, use the command :
+
+```bash
+make run2
+```
 
 ## Installation
 

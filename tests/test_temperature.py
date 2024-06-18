@@ -60,10 +60,10 @@ class TestTemperature(unittest.TestCase):
 
     def test_std_t90_month(self):
         """
-        Test the std_t90_month method.
+        Test the std_t90 method.
         """
         temperature = TemperatureComponent(self.data_path, self.mask_path)
-        anomalies = temperature.std_t90_month(self.reference_period)
+        anomalies = temperature.std_t90(self.reference_period)
 
         # Verify that anomalies is a Dataset
         self.assertIsInstance(anomalies, xr.Dataset)
@@ -95,7 +95,7 @@ class TestTemperature(unittest.TestCase):
         data.to_netcdf('test_no_temperature_variation.nc')
 
         temperature = TemperatureComponent('test_no_temperature_variation.nc', self.mask_path)
-        anomalies = temperature.std_t90_month(self.reference_period)
+        anomalies = temperature.std_t90(self.reference_period)
 
         self.assertTrue(np.all(np.isnan(anomalies['t2m'])), "Anomalies should be NaN when there is no temperature variation.")
         os.remove('test_no_temperature_variation.nc')
@@ -118,7 +118,7 @@ class TestTemperature(unittest.TestCase):
         data.to_netcdf('test_constant_temperature.nc')
 
         temperature = TemperatureComponent('test_constant_temperature.nc', self.mask_path)
-        anomalies = temperature.std_t90_month(self.reference_period)
+        anomalies = temperature.std_t90(self.reference_period)
 
         self.assertTrue(np.all(np.isnan(anomalies['t2m'])), "Anomalies should be NaN when temperature is constant.")
         os.remove('test_constant_temperature.nc')
@@ -142,7 +142,7 @@ class TestTemperature(unittest.TestCase):
         data.to_netcdf('test_random_temperature_variation.nc')
 
         temperature = TemperatureComponent('test_random_temperature_variation.nc', self.mask_path)
-        anomalies = temperature.std_t90_month(self.reference_period)
+        anomalies = temperature.std_t90(self.reference_period)
 
         self.assertIsInstance(anomalies, xr.Dataset)
         os.remove('test_random_temperature_variation.nc')

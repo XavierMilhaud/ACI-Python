@@ -67,7 +67,7 @@ class TestWindComponent(unittest.TestCase):
         Test the calculate_wind_power method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        wind_power = wind.calculate_wind_power()
+        wind_power = wind.wind_power()
 
         # Verify that wind_power is a DataArray
         self.assertIsInstance(wind_power, xr.DataArray)
@@ -86,7 +86,7 @@ class TestWindComponent(unittest.TestCase):
         Test the calculate_wind_thresholds method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        wind_thresholds = wind.calculate_wind_thresholds(self.reference_period)
+        wind_thresholds = wind.wind_thresholds(self.reference_period)
 
         # Verify that wind_thresholds is a DataArray
         self.assertIsInstance(wind_thresholds, xr.DataArray)
@@ -105,7 +105,7 @@ class TestWindComponent(unittest.TestCase):
         Test the calculate_days_above_thresholds method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        days_above_thresholds = wind.calculate_days_above_thresholds(self.reference_period)
+        days_above_thresholds = wind.days_above_thresholds(self.reference_period)
 
         # Verify that days_above_thresholds is a DataArray
         self.assertIsInstance(days_above_thresholds, xr.DataArray)
@@ -124,7 +124,7 @@ class TestWindComponent(unittest.TestCase):
         Test the calculate_wind_exceedance_frequency method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        wind_exceedance_frequency = wind.calculate_wind_exceedance_frequency(self.reference_period)
+        wind_exceedance_frequency = wind.wind_exceedance_frequency(self.reference_period)
 
         # Verify that wind_exceedance_frequency is a DataArray
         self.assertIsInstance(wind_exceedance_frequency, xr.DataArray)
@@ -143,7 +143,7 @@ class TestWindComponent(unittest.TestCase):
         Test the standardize_wind_exceedance_frequency method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        standardized_frequency = wind.standardize_wind_exceedance_frequency(self.reference_period)
+        standardized_frequency = wind.std_wind_exceedance_frequency(self.reference_period)
 
         # Verify that standardized_frequency is a DataArray
         self.assertIsInstance(standardized_frequency, xr.DataArray)

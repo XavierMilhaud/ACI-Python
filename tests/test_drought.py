@@ -60,7 +60,7 @@ class TestDrought(unittest.TestCase):
         Test the standardize_max_consecutive_dry_days method.
         """
         drought = DroughtComponent(self.data_path, self.mask_path)
-        anomalies = drought.standardize_max_consecutive_dry_days(self.reference_period)
+        anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
 
         # Verify that anomalies is a DataArray
         self.assertIsInstance(anomalies, xr.DataArray)
@@ -104,7 +104,7 @@ class TestDrought(unittest.TestCase):
         
         drought = DroughtComponent(self.data_path, self.mask_path)
         
-        anomalies = drought.standardize_max_consecutive_dry_days(self.reference_period)
+        anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
         
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when there is no precipitation.")
     
@@ -127,8 +127,8 @@ class TestDrought(unittest.TestCase):
         
         drought = DroughtComponent(self.data_path, self.mask_path)
         
-        anomalies = drought.standardize_max_consecutive_dry_days(self.reference_period)
-        cal = drought.calculate_max_consecutive_dry_days()
+        anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
+        cal = drought.max_consecutive_dry_days()
 
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant below the threshold")
         self.assertTrue(np.all(cal == cal[0, 0, 0]), "Max consecutive dry days should be the same when precipitation is constant and below the threshold.")

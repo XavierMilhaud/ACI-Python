@@ -54,11 +54,11 @@ class TestPrecipitation(unittest.TestCase):
 
     def test_calculate_monthly_max_anomaly(self):
         """
-        Test the calculate_monthly_max_anomaly method.
+        Test the monthly_max_anomaly method.
         """
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
 
-        anomalies = precipitation.calculate_monthly_max_anomaly('tp', 5, self.reference_period)
+        anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
 
         # Verify that anomalies is a DataArray
         self.assertIsInstance(anomalies, xr.DataArray)
@@ -102,7 +102,7 @@ class TestPrecipitation(unittest.TestCase):
         
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
         
-        anomalies = precipitation.calculate_monthly_max_anomaly('tp', 5, self.reference_period)
+        anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
         
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when there is no precipitation.")
     
@@ -125,7 +125,7 @@ class TestPrecipitation(unittest.TestCase):
         
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
                
-        anomalies = precipitation.calculate_monthly_max_anomaly('tp', 5, self.reference_period)
+        anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
         
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant.")
 

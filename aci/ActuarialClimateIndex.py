@@ -65,23 +65,23 @@ class ActuarialClimateIndex:
         factor = 1 if factor is None else factor
 
 
-        preci_std = self.precipitation_component.calculate_monthly_max_anomaly("tp", 5, self.reference_period, True)
+        preci_std = self.precipitation_component.monthly_max_anomaly("tp", 5, self.reference_period, True)
         p_df = preci_std.to_dataframe()
         p_df.columns = ["precipitation"]
 
-        wind_std = self.wind_component.standardize_wind_exceedance_frequency(self.reference_period, True)
+        wind_std = self.wind_component.std_wind_exceedance_frequency(self.reference_period, True)
         w_df = wind_std.to_dataframe(name="windpower")
         w_df.columns = ["windpower"]
 
-        drought_std = self.drought_component.standardize_max_consecutive_dry_days(self.reference_period, True)
+        drought_std = self.drought_component.std_max_consecutive_dry_days(self.reference_period, True)
         cdd_df = drought_std.to_dataframe()
         cdd_df.columns = ["drought"]
 
-        temp90_std = self.temperature_component.std_t90_month(self.reference_period, True)
+        temp90_std = self.temperature_component.std_t90(self.reference_period, True)
         t90_df = temp90_std.to_dataframe()
         t90_df.columns = ["T90"]
 
-        temp10_std = self.temperature_component.std_t10_month(self.reference_period, True)
+        temp10_std = self.temperature_component.std_t10(self.reference_period, True)
         t10_df = temp10_std.to_dataframe()
         t10_df.columns = ["T10"]
 

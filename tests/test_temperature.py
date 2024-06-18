@@ -58,7 +58,7 @@ class TestTemperature(unittest.TestCase):
         os.remove(self.data_path)
         os.remove(self.mask_path)
 
-    def test_std_t90_month(self):
+    def test_std_t90(self):
         """
         Test the std_t90 method.
         """
@@ -149,8 +149,8 @@ class TestTemperature(unittest.TestCase):
 
     def test_temperature_component(self):
         temp_component = TemperatureComponent(self.t2m_path, self.mask_path_bis)
-        calculated_anomalies_t90 = temp_component.std_t90_month(('1960-01-01', '1961-12-31'), area=True)
-        calculated_anomalies_t10 = temp_component.std_t10_month(('1960-01-01', '1961-12-31'), area=True)
+        calculated_anomalies_t90 = temp_component.std_t90(('1960-01-01', '1961-12-31'), area=True)
+        calculated_anomalies_t10 = temp_component.std_t10(('1960-01-01', '1961-12-31'), area=True)
 
         reference_anomalies_t90 = xr.open_dataarray(self.reference_anomalies_t90_path)
         reference_anomalies_t10 = xr.open_dataarray(self.reference_anomalies_t10_path)
@@ -164,6 +164,7 @@ class TestTemperature(unittest.TestCase):
         # Vérifier que les anomalies calculées correspondent aux anomalies de référence
         np.testing.assert_allclose(calculated_anomalies_t90, reference_anomalies_t90, rtol=1e-5, atol=1e-8)
         np.testing.assert_allclose(calculated_anomalies_t10, reference_anomalies_t10, rtol=1e-5, atol=1e-8)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

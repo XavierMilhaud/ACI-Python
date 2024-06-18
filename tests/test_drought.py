@@ -55,9 +55,9 @@ class TestDrought(unittest.TestCase):
         os.remove(self.data_path)
         os.remove(self.mask_path)
 
-    def test_standardize_max_consecutive_dry_days(self):
+    def test_std_max_consecutive_dry_days(self):
         """
-        Test the standardize_max_consecutive_dry_days method.
+        Test the std_max_consecutive_dry_days method.
         """
         drought = DroughtComponent(self.data_path, self.mask_path)
         anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
@@ -135,7 +135,7 @@ class TestDrought(unittest.TestCase):
 
     def test_standardize_drought(self):
         """
-        Test the standardize_max_consecutive_dry_days method against precomputed reference anomalies.
+        Test the std_max_consecutive_dry_days method against precomputed reference anomalies.
         """
         for test_case in self.test_cases:
             with self.subTest(test_case=test_case):
@@ -146,7 +146,7 @@ class TestDrought(unittest.TestCase):
                 drought_component = DroughtComponent(precipitation_path, mask_path)
 
                 # Calculer les anomalies
-                calculated_anomalies = drought_component.standardize_max_consecutive_dry_days(self.reference_period_bis, area=True)
+                calculated_anomalies = drought_component.std_max_consecutive_dry_days(self.reference_period_bis, area=True)
                 
                 # Lire les anomalies de référence
                 reference_anomalies = xr.open_dataset(reference_anomalies_path)

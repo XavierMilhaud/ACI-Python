@@ -16,7 +16,3 @@ clean:
 run:
 	# Exécuter tous les tests dans ./tests
 	cd tests && PYTHONWARNINGS="ignore::DeprecationWarning,ignore::PendingDeprecationWarning,ignore::FutureWarning" python -m unittest discover -s .
-
-run2:
-	# Exécuter uniquement les tests *_bis.py dans ./tests
-	cd tests && PYTHONWARNINGS="ignore::DeprecationWarning,ignore::PendingDeprecationWarning,ignore::FutureWarning" python -m unittest discover -s . -p '*_bis.py'

@@ -19,11 +19,6 @@ It is possible to run the current tests implemented by processing :
 ```bash
 make run
 ```
-For a faster execution, use the command :
-
-```bash
-make run2
-```
 
 ## Installation
 

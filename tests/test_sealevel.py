@@ -31,6 +31,12 @@ class TestSeaLevelComponent(unittest.TestCase):
         df['Date'] = df['Date'].apply(lambda x: float(f"{x.year}.{x.month:02}125"))
         df.to_csv(os.path.join(self.data_path, "test_file.txt"), sep=";", index=False, header=False)
 
+        # Setting up testing parameters for last method
+
+        self.test_cases = ['test1', 'test2', 'test3', 'test4']
+        self.reference_period_bis = ('2000-01-01', '2000-12-31')
+        self.study_period_bis = ('2000-01-01', '2001-12-31')
+
     def tearDown(self):
         """
         Clean up test data.
@@ -62,7 +68,7 @@ class TestSeaLevelComponent(unittest.TestCase):
         """
         data = self.sea_level_component.load_data()
         data = self.sea_level_component.correct_date_format(data)
-        data.iloc[0, 0] = -99999.0  # Introducing a sentinel value
+        data.iloc[0, 0] = -99999.0
         cleaned_data = self.sea_level_component.clean_data(data)
         self.assertTrue(np.isnan(cleaned_data.iloc[0, 0]))
 
@@ -100,6 +106,46 @@ class TestSeaLevelComponent(unittest.TestCase):
         standardized_data = self.sea_level_component.process()
         self.assertIsInstance(standardized_data, pd.DataFrame)
         self.assertFalse(standardized_data.empty)
+
+    def test_standardize_sealevel(self):
+        """
+        Test the standardize_sealevel method against precomputed reference anomalies.
+        """
+        for test_case in self.test_cases:
+            with self.subTest(test_case=test_case):
+                sea_level_data_path = f'../data/tests_data/tests_data_sealevel/{test_case}_sea_level_test_data.csv'
+                reference_anomalies_path = f'../data/tests_data/tests_data_sealevel/{test_case}_reference_anomalies.csv'
+
+                # Lire les données de niveau de la mer
+                sea_level_data = pd.read_csv(sea_level_data_path, index_col='Corrected_Date', parse_dates=True)
+
+                # Configurer le composant SeaLevel
+                sea_level_component = SeaLevelComponent(
+                    'FRA',
+                    self.study_period_bis,
+                    self.reference_period_bis
+                )
+                sea_level_component.data = sea_level_data  
+
+                # Calculer les anomalies
+                calculated_anomalies = sea_level_component.process()
+
+                # Lire les anomalies de référence
+                reference_anomalies = pd.read_csv(reference_anomalies_path, index_col='Corrected_Date', parse_dates=True)
+
+                combined_df = pd.DataFrame({
+                    'calculated_mean': calculated_anomalies.mean(axis=1),
+                    'reference_mean': reference_anomalies.mean(axis=1)
+                }).dropna()
+
+                # Comparer les anomalies aux valeurs de référence
+                pd.testing.assert_series_equal(
+                    combined_df['calculated_mean'],
+                    combined_df['reference_mean'],
+                    check_less_precise=True,
+                    check_names=False
+                )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

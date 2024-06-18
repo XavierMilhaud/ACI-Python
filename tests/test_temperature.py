@@ -41,6 +41,15 @@ class TestTemperature(unittest.TestCase):
             coords={'lat': latitudes, 'lon': longitudes}
         )
         mask.to_netcdf(self.mask_path)
+        
+        # Construction des chemins d'accès aux données de test stockées
+
+        data_dir = '../data/tests_data/tests_data_temperature'
+        self.t2m_path = os.path.join(data_dir, 'test1_t2m.nc')
+        self.mask_path_bis = os.path.join(data_dir, 'test1_mask.nc')
+        self.reference_anomalies_t90_path = os.path.join(data_dir, 'test1_reference_anomalies_t90.nc')
+        self.reference_anomalies_t10_path = os.path.join(data_dir, 'test1_reference_anomalies_t10.nc')
+
 
     def tearDown(self):
         """
@@ -123,7 +132,7 @@ class TestTemperature(unittest.TestCase):
         longitudes = np.arange(1.0, 1.5, 0.1)
 
         # Random temperature variation
-        np.random.seed(1)
+        np.random.seed(0)
         temperature_data = np.random.rand(len(times), len(latitudes), len(longitudes))
 
         data = xr.Dataset(
@@ -137,6 +146,24 @@ class TestTemperature(unittest.TestCase):
 
         self.assertIsInstance(anomalies, xr.Dataset)
         os.remove('test_random_temperature_variation.nc')
+
+    def test_temperature_component(self):
+        temp_component = TemperatureComponent(self.t2m_path, self.mask_path_bis)
+        calculated_anomalies_t90 = temp_component.std_t90_month(('1960-01-01', '1961-12-31'), area=True)
+        calculated_anomalies_t10 = temp_component.std_t10_month(('1960-01-01', '1961-12-31'), area=True)
+
+        reference_anomalies_t90 = xr.open_dataarray(self.reference_anomalies_t90_path)
+        reference_anomalies_t10 = xr.open_dataarray(self.reference_anomalies_t10_path)
+
+        # Extraire les DataArray des Dataset
+        calculated_anomalies_t90 = calculated_anomalies_t90['t2m'].values.astype(np.float64)
+        calculated_anomalies_t10 = calculated_anomalies_t10['t2m'].values.astype(np.float64)
+        reference_anomalies_t90 = reference_anomalies_t90.values.astype(np.float64)
+        reference_anomalies_t10 = reference_anomalies_t10.values.astype(np.float64)
+
+        # Vérifier que les anomalies calculées correspondent aux anomalies de référence
+        np.testing.assert_allclose(calculated_anomalies_t90, reference_anomalies_t90, rtol=1e-5, atol=1e-8)
+        np.testing.assert_allclose(calculated_anomalies_t10, reference_anomalies_t10, rtol=1e-5, atol=1e-8)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

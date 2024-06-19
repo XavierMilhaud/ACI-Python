@@ -48,13 +48,15 @@ class TemperatureComponent(Component):
             temperature_reference = self.temperature_days.sel(time=slice(reference_period[0], reference_period[1]))
         elif tempo == "night":
             rolling_window_size = 40
+            
+            # Erreur principale du code d'avant se situe ici. Il faut remplacer days par nights.
+
             temperature_reference = self.temperature_nights.sel(time=slice(reference_period[0], reference_period[1]))
         else:
             raise ValueError("tempo must be 'day' or 'night'")
 
         percentile_reference = temperature_reference['t2m'].rolling(time=rolling_window_size, min_periods=1, center=True).reduce(np.percentile, q=n)
         percentile_calendar = percentile_reference.groupby('time.dayofyear').reduce(np.percentile, q=n)
-
         return percentile_calendar
 
     def t90(self, reference_period):
@@ -100,13 +102,5 @@ class TemperatureComponent(Component):
         return self.standardize_metric(t10, reference_period, area)
 
     def plot_components(self, component_data0, component_data1, n):
-        """
-        Plot seasonal components of temperature.
-
-        Parameters:
-        - component_data0 (xarray.DataArray): DataArray containing the seasonal temperature component.
-        - component_data1 (xarray.DataArray): DataArray containing another seasonal temperature component.
-        - n (int): Rolling window size.
-        """
         component_data0["t2m"].rolling(time=n, center=True).mean().plot()
         component_data1["t2m"].rolling(time=n, center=True).mean().plot()

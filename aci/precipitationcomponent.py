@@ -2,8 +2,6 @@ import xarray as xr
 import numpy as np
 from component import Component
 
-
-
 class PrecipitationComponent(Component):
     """
     A class to handle precipitation data and perform related calculations.
@@ -20,6 +18,9 @@ class PrecipitationComponent(Component):
         Args:
             precipitation_path (str): The file path of the precipitation data.
             mask_path (str): The file path of the mask data.
+
+        Complexity:
+        O(P) for loading and initializing precipitation and mask data, where P is the size of the precipitation dataset.
         """
         precipitation = xr.open_dataset(precipitation_path)
         mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
@@ -35,6 +36,9 @@ class PrecipitationComponent(Component):
 
         Returns:
             xarray.DataArray: The maximum monthly precipitation.
+
+        Complexity:
+        O(N) for calculating rolling sum and resampling, where N is the number of time steps in the dataset.
         """
         rolling_sum = self.calculate_rolling_sum(var_name, window_size)
         monthly_max = rolling_sum.resample(time='M').max()
@@ -52,6 +56,9 @@ class PrecipitationComponent(Component):
 
         Returns:
             xarray.DataArray: The anomaly of maximum monthly precipitation.
+
+        Complexity:
+        O(N + R) for calculating monthly maximum and standardizing, where N is the number of time steps and R is the size of the reference period.
         """
         monthly_max = self.monthly_max(var_name, window_size)
         return self.standardize_metric(monthly_max, reference_period, area)
@@ -66,6 +73,9 @@ class PrecipitationComponent(Component):
 
         Returns:
             xarray.DataArray: The maximum seasonal precipitation.
+
+        Complexity:
+        O(N) for calculating rolling sum and resampling, where N is the number of time steps in the dataset.
         """
         rolling_sum = self.calculate_rolling_sum(var_name, window_size)
         seasonly_max = rolling_sum.resample(time='QS-DEC').max()
@@ -83,6 +93,9 @@ class PrecipitationComponent(Component):
 
         Returns:
             xarray.DataArray: The anomaly of maximum seasonal precipitation.
+
+        Complexity:
+        O(N + R) for calculating seasonal maximum and standardizing, where N is the number of time steps and R is the size of the reference period.
         """
         seasonly_max = self.seasonly_max(var_name, window_size)
         return self.standardize_metric(seasonly_max, reference_period, area)

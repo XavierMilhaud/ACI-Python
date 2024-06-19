@@ -42,6 +42,7 @@ class WindComponent(Component):
         self.array = self.v10
         v10 = self.apply_mask("v10")
         self.array = temp
+
         ws = np.sqrt(u10.u10**2 + v10.v10**2)
         rho = 1.23  # Air density constant
         dailymean_ws = ws.resample(time='D').mean()
@@ -56,12 +57,16 @@ class WindComponent(Component):
         """
         Calculate wind power thresholds based on the 90th percentile.
 
+        Args:
+        - reference_period (tuple): A tuple containing the start and end dates of the reference period.
+
         Returns:
         - xarray.DataArray: Wind power thresholds.
         """
         wind_power = self.wind_power()
         wind_power_reference = wind_power.sel(time=slice(reference_period[0], reference_period[1]))
         time_index = wind_power.time.dt.dayofyear
+
         dset_mean = wind_power_reference.groupby("time.dayofyear").mean().sel(dayofyear=time_index)
         dset_std = wind_power_reference.groupby("time.dayofyear").std().sel(dayofyear=time_index)
         wind_power_thresholds = (dset_mean + 1.28 * dset_std).drop("dayofyear")
@@ -70,6 +75,9 @@ class WindComponent(Component):
     def days_above_thresholds(self, reference_period):
         """
         Calculate the days above thresholds.
+
+        Args:
+        - reference_period (tuple): A tuple containing the start and end dates of the reference period.
 
         Returns:
         - xarray.DataArray: Days above thresholds.
@@ -83,6 +91,9 @@ class WindComponent(Component):
     def wind_exceedance_frequency(self, reference_period):
         """
         Calculate the frequency of daily mean wind power above the 90th percentile.
+
+        Args:
+        - reference_period (tuple): A tuple containing the start and end dates of the reference period.
 
         Returns:
         - xarray.DataArray: Wind exceedance frequency.

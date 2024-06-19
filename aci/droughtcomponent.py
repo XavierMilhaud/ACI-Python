@@ -18,6 +18,9 @@ class DroughtComponent(Component):
         Parameters:
         - precipitation_path (str): Path to the dataset containing precipitation data.
         - mask_path (str): Path to the dataset containing mask data.
+
+        Complexity:
+        O(P) for loading and initializing precipitation and mask data, where P is the size of the precipitation dataset.
         """
         precipitation = xr.open_dataset(precipitation_path)
         mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
@@ -29,29 +32,20 @@ class DroughtComponent(Component):
 
         Returns:
         - xarray.DataArray: Maximum number of consecutive dry days.
+
+        Complexity:
+        O(N) for calculating cumulative sums and transformations, where N is the number of time steps in the dataset.
         """
-    
         preci = self.apply_mask("tp")
         precipitation_per_day = preci['tp'].resample(time='d').sum()
-        precipitation_per_day = precipitation_per_day.to_dataset()
-        precipitation_per_day['days_below_thresholds'] = xr.where(precipitation_per_day.tp < 0.001, 1, 0)
-        day_sum = precipitation_per_day['days_below_thresholds'].resample(time='d').sum()
-        days_above_thresholds = xr.where(day_sum < 0.001, 1, 0)
-        precipitation_per_day['das'] = (
-            precipitation_per_day['days_below_thresholds'].cumsum(dim='time') 
-            - precipitation_per_day['days_below_thresholds'].cumsum(dim='time')
-            .where(precipitation_per_day['days_below_thresholds'] == 0)
-            .ffill(dim='time')
-            .fillna(0)
-        )
+        days_below_thresholds = xr.where(precipitation_per_day < 0.001, 1, 0)
+        days_above_thresholds = xr.where(days_below_thresholds == 0, 1, 0)
 
-        days = (
-            days_above_thresholds.cumsum(dim='time') 
-            - days_above_thresholds.cumsum(dim='time')
-            .where(days_above_thresholds == 0)
-            .ffill(dim='time')
-            .fillna(0)
-        )
+        cumsum_below = days_below_thresholds.cumsum(dim='time')
+        das = cumsum_below - cumsum_below.where(days_below_thresholds == 0).ffill(dim='time').fillna(0)
+
+        cumsum_above = days_above_thresholds.cumsum(dim='time')
+        days = cumsum_above - cumsum_above.where(days_above_thresholds == 0).ffill(dim='time').fillna(0)
         
         return days
 
@@ -65,6 +59,9 @@ class DroughtComponent(Component):
 
         Returns:
         - xarray.DataArray: Standardized maximum number of consecutive dry days.
+
+        Complexity:
+        O(N + R) for calculating maximum consecutive dry days and standardizing, where N is the number of time steps and R is the size of the reference period.
         """
         max_days_drought_per_month = self.max_consecutive_dry_days().resample(time='m').max()
         return self.standardize_metric(max_days_drought_per_month, reference_period, area)

@@ -1,24 +1,21 @@
-#!/usr/bin/env python3
-
 import os
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import getSeaLevelData as gd
-from datetime import datetime, timedelta
+from component import Component
 
-class SeaLevelComponent:
+class SeaLevelComponent(Component):
     """
     A class used to represent the Sea Level Component.
 
     Attributes
     ----------
     directory : str
-        directory path where sea level data files are stored
+        Directory path where sea level data files are stored.
     study_period : tuple
-        tuple of start and end dates for the study period
+        Tuple of start and end dates for the study period.
     reference_period : tuple
-        tuple of start and end dates for the reference period
+        Tuple of start and end dates for the reference period.
 
     Methods
     -------
@@ -46,19 +43,19 @@ class SeaLevelComponent:
 
     def __init__(self, country_abrev, study_period, reference_period):
         """
-        Constructs all the necessary attributes for the SeaLevelComponent object.
+        Constructs all the necessary attributes for the Sea Level Component object.
 
         Parameters
         ----------
-            country_abrev : str
-                Abbreviation of the country for which the sea level data is relevant.
-            study_period : tuple
-                Tuple containing the start and end date of the study period (YYYY-MM-DD).
-            reference_period : tuple
-                Tuple containing the start and end date of the reference period (YYYY-MM-DD).
+        country_abrev : str
+            Abbreviation of the country for which the sea level data is relevant.
+        study_period : tuple
+            Tuple containing the start and end date of the study period (YYYY-MM-DD).
+        reference_period : tuple
+            Tuple containing the start and end date of the reference period (YYYY-MM-DD).
         """
         gd.copy_and_rename_files_by_country(country_abrev)
-        self.directory = "../data/sealevel_data_" + country_abrev
+        self.directory = f"../data/sealevel_data_{country_abrev}"
         self.study_period = study_period
         self.reference_period = reference_period
 
@@ -68,8 +65,13 @@ class SeaLevelComponent:
 
         Returns
         -------
-        DataFrame
+        pd.DataFrame
             A DataFrame containing the concatenated data from all files.
+
+        Complexity
+        ----------
+        O(N * M)
+        where N is the number of files and M is the number of rows per file.
         """
         dataframes = []
         for filename in os.listdir(self.directory):
@@ -82,10 +84,7 @@ class SeaLevelComponent:
                 dataframes.append(temp_data)
 
         combined_data = pd.concat(dataframes, axis=1)
-        #print(f"Loaded data from {len(dataframes)} files.")
-        #print("Data range:", combined_data.index.min(), "-", combined_data.index.max())
         return combined_data
-
 
     def correct_date_format(self, data):
         """
@@ -93,13 +92,18 @@ class SeaLevelComponent:
 
         Parameters
         ----------
-        data : DataFrame
+        data : pd.DataFrame
             The DataFrame with the original date format.
 
         Returns
         -------
-        DataFrame
+        pd.DataFrame
             The DataFrame with corrected date format.
+
+        Complexity
+        ----------
+        O(N)
+        where N is the number of rows in the DataFrame.
         """
         month_mapping = {
             "0417": "01", "125": "02", "2083": "03", "2917": "04", "375": "05", 
@@ -107,34 +111,24 @@ class SeaLevelComponent:
             "875": "11", "9583": "12"
         }
 
-        corrected_dates = []
-        for date in data.index:
+        def convert_date(date):
             date_str = str(date)
             try:
                 year = int(float(date_str))
                 month_fraction = date_str.split('.')[1][:4]
-                if month_fraction in month_mapping:
-                    month = month_mapping[month_fraction]
-                    corrected_date = f"{year}-{month}-01"
-                    corrected_dates.append(corrected_date)
-                else:
-                    corrected_dates.append(np.nan)
+                month = month_mapping.get(month_fraction, None)
+                if month:
+                    return pd.Timestamp(f"{year}-{month}-01")
+                return pd.NaT
             except (ValueError, IndexError):
-                corrected_dates.append(np.nan)
+                return pd.NaT
 
-        # Utiliser pd.concat pour ajouter les nouvelles colonnes en une seule opération
-        corrected_dates_series = pd.to_datetime(corrected_dates, errors='coerce')
-        new_data = pd.concat([data, pd.Series(corrected_dates_series, name='Corrected_Date', index=data.index)], axis=1)
-
-        # Suppression des lignes avec des dates non valides
-        new_data.dropna(subset=['Corrected_Date'], inplace=True)
-        new_data.set_index('Corrected_Date', inplace=True)
-        new_data.sort_index(inplace=True)  # Ensure the dates are sorted
-        return new_data
-
-
-
-
+        corrected_dates = data.index.to_series().apply(convert_date)
+        data = data.assign(Corrected_Date=corrected_dates)
+        data = data.dropna(subset=['Corrected_Date'])
+        data = data.set_index('Corrected_Date')
+        data.sort_index(inplace=True)
+        return data
 
     def clean_data(self, data):
         """
@@ -142,16 +136,20 @@ class SeaLevelComponent:
 
         Parameters
         ----------
-        data : DataFrame
+        data : pd.DataFrame
             The DataFrame to be cleaned.
 
         Returns
         -------
-        DataFrame
+        pd.DataFrame
             The cleaned DataFrame.
+
+        Complexity
+        ----------
+        O(N)
+        where N is the number of rows in the DataFrame.
         """
-        data.replace(-99999.0, np.nan, inplace=True)
-        return data
+        return data.replace(-99999.0, np.nan)
 
     def compute_monthly_stats(self, data, reference_period, stats):
         """
@@ -159,7 +157,7 @@ class SeaLevelComponent:
 
         Parameters
         ----------
-        data : DataFrame
+        data : pd.DataFrame
             The DataFrame containing the sea level data.
         reference_period : tuple
             Tuple containing the start and end date of the reference period (YYYY-MM-DD).
@@ -168,11 +166,16 @@ class SeaLevelComponent:
 
         Returns
         -------
-        Series
+        pd.Series
             A Series containing the monthly statistics.
+
+        Complexity
+        ----------
+        O(N)
+        where N is the number of rows in the reference period DataFrame.
         """
         reference_period_mask = (data.index >= reference_period[0]) & (data.index < reference_period[1])
-        data_ref = data[reference_period_mask]
+        data_ref = data.loc[reference_period_mask]
         mean_ref = data_ref.mean(axis=1)
 
         monthly_means = mean_ref.groupby(mean_ref.index.month).mean()
@@ -183,7 +186,7 @@ class SeaLevelComponent:
         elif stats == "std":
             return monthly_std_devs
         else:
-            raise Exception("stats in wrong format: should be 'means' or 'std'")
+            raise ValueError("stats must be 'means' or 'std'")
 
     def standardize_data(self, data, monthly_means, monthly_std_devs, study_period):
         """
@@ -191,45 +194,36 @@ class SeaLevelComponent:
 
         Parameters
         ----------
-        data : DataFrame
+        data : pd.DataFrame
             The DataFrame containing the sea level data.
-        monthly_means : Series
+        monthly_means : pd.Series
             A Series containing the monthly means for the reference period.
-        monthly_std_devs : Series
+        monthly_std_devs : pd.Series
             A Series containing the monthly standard deviations for the reference period.
         study_period : tuple
             Tuple containing the start and end date of the study period (YYYY-MM-DD).
 
         Returns
         -------
-        DataFrame
+        pd.DataFrame
             The standardized DataFrame.
+
+        Complexity
+        ----------
+        O(N)
+        where N is the number of rows in the study period DataFrame.
         """
         study_period_mask = (data.index >= study_period[0]) & (data.index < study_period[1])
-        data_study = data[study_period_mask]
-        standardized_df = data_study.copy()
+        data_study = data.loc[study_period_mask]
 
-        if data_study.index.isna().any():
-            print("NaN values detected in index. Dropping NaN values.")
-            data_study = data_study.dropna()
+        def calculate_z_score(row, monthly_means, monthly_std_devs):
+            month = row.name.month
+            if month in monthly_means and month in monthly_std_devs:
+                return (row - monthly_means[month]) / monthly_std_devs[month]
+            return np.nan
 
-        if data_study.empty:
-            print(f"No valid data in the study period after dropping NaN values. Study period: {study_period}")
-            raise ValueError("No valid data in the study period after dropping NaN values.")
-
-        min_year = int(data_study.index.year.min())
-        max_year = int(data_study.index.year.max()) + 1
-
-        #print(f"Min year: {min_year}, Max year: {max_year}")
-
-        for year in range(min_year, max_year):
-            for month in range(1, 13):
-                month_data = data_study.loc[(data_study.index.month == month) & (data_study.index.year == year)]
-                if not month_data.empty:
-                    z_score = (month_data - monthly_means.loc[month]) / monthly_std_devs.loc[month]
-                    standardized_df.loc[(standardized_df.index.month == month) & (standardized_df.index.year == year)] = z_score.values[0]
-
-        return standardized_df
+        standardized_df = data_study.apply(calculate_z_score, args=(monthly_means, monthly_std_devs), axis=1)
+        return standardized_df.dropna(how='all')
 
     def process(self):
         """
@@ -237,24 +231,19 @@ class SeaLevelComponent:
 
         Returns
         -------
-        DataFrame
+        pd.DataFrame
             The fully processed and standardized DataFrame.
+
+        Complexity
+        ----------
+        O(N * M)
+        where N is the number of rows and M is the number of columns in the final standardized DataFrame.
         """
         sea_level_data = self.load_data()
-        #print("Original Data:")
-        #print(sea_level_data.head())
-
         sea_level_data = self.correct_date_format(sea_level_data)
-        #print("Data after date correction:")
-        #print(sea_level_data.head())
-
         sea_level_data = self.clean_data(sea_level_data)
-        #print("Data after cleaning:")
-        #print(sea_level_data.head())
-
         monthly_means = self.compute_monthly_stats(sea_level_data, self.reference_period, "means")
         monthly_std_devs = self.compute_monthly_stats(sea_level_data, self.reference_period, "std")
-
         standardized_data = self.standardize_data(sea_level_data, monthly_means, monthly_std_devs, self.study_period)
         return standardized_data
 
@@ -264,10 +253,15 @@ class SeaLevelComponent:
 
         Parameters
         ----------
-        data : DataFrame
+        data : pd.DataFrame
             The DataFrame containing the sea level data.
         window : int, optional
             The window size for calculating the rolling mean (default is 60).
+
+        Complexity
+        ----------
+        O(N)
+        where N is the number of rows in the DataFrame.
         """
         data.rolling(window, min_periods=30, center=True).mean().plot()
 
@@ -277,13 +271,18 @@ class SeaLevelComponent:
 
         Parameters
         ----------
-        data : DataFrame
+        data : pd.DataFrame
             The DataFrame to be converted.
 
         Returns
         -------
-        xarray.DataArray
+        xr.DataArray
             The converted xarray.
+
+        Complexity
+        ----------
+        O(N)
+        where N is the number of rows in the DataFrame.
         """
         return data.to_xarray()
 
@@ -293,13 +292,18 @@ class SeaLevelComponent:
 
         Parameters
         ----------
-        data : DataFrame
+        data : pd.DataFrame
             The DataFrame to be resampled.
 
         Returns
         -------
-        DataFrame
+        pd.DataFrame
             The resampled DataFrame.
+
+        Complexity
+        ----------
+        O(N)
+        where N is the number of rows in the DataFrame.
         """
         return data.resample('3M').mean()
 
@@ -309,23 +313,14 @@ class SeaLevelComponent:
 
         Parameters
         ----------
-        data : xarray.DataArray
+        data : xr.DataArray
             The data to be saved.
         filename : str
             The name of the file to save the data.
+
+        Complexity
+        ----------
+        O(N)
+        where N is the number of rows in the DataArray.
         """
         data.to_netcdf(filename)
-
-if __name__ == "__main__":
-    sea_level_component = SeaLevelComponent("USA", ('1960-01-01', '1969-12-31'), ('1960-01-01', '1964-12-31'))
-
-    try:
-        standardized_data = sea_level_component.process()
-        print("\n" + "SEA LEVEL DATA" + "\n")
-        print(standardized_data)
-        print("\n")
-        sea_level_component.plot_rolling_mean(standardized_data.mean(axis=1))
-        plt.show()
-    except ValueError as e:
-        print(f"Error: {e}")
-

@@ -1,5 +1,6 @@
 import xarray as xr
 import numpy as np
+import warnings
 
 class Component:
     """
@@ -21,6 +22,9 @@ class Component:
             mask (xarray.Dataset): The dataset containing the mask data.
             file_name (str): The file name of the dataset.
         """
+        # Ignore specific warning about is_monotonic
+        warnings.filterwarnings("ignore", category=FutureWarning, message="is_monotonic is deprecated and will be removed in a future version. Use is_monotonic_increasing instead.")
+        
         self.array = array
         self.mask = mask
         self.file_name = file_name

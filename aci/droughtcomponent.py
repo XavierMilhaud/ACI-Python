@@ -1,20 +1,14 @@
 import xarray as xr
 import numpy as np
-#import Era5var
-from datetime import datetime
+from component import Component
 
-
-
-
-
-class DroughtComponent:
+class DroughtComponent(Component):
     """
     Class to process drought data and calculate standardized anomalies of consecutive dry days.
 
     Attributes:
     - precipitation (xarray.Dataset): Dataset containing precipitation data.
     - mask (xarray.Dataset): Dataset containing mask data.
-    - drought_days (xarray.DataArray): Maximum number of consecutive dry days in each year.
     """
 
     def __init__(self, precipitation_path, mask_path):
@@ -22,72 +16,52 @@ class DroughtComponent:
         Initialize the DroughtComponent object.
 
         Parameters:
-        - precipitation (xarray.Dataset): path to nc file containing precipitation data.
-        - mask (xarray.Dataset): path to nc file containing mask data.
+        - precipitation_path (str): Path to the dataset containing precipitation data.
+        - mask_path (str): Path to the dataset containing mask data.
+
+        Complexity:
+        O(P) for loading and initializing precipitation and mask data, where P is the size of the precipitation dataset.
         """
-        self.precipitation = xr.open_dataset(precipitation_path)
-        self.mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
-        
+        precipitation = xr.open_dataset(precipitation_path)
+        mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
+        super().__init__(precipitation, mask, precipitation_path)
 
-    def apply_mask(self, temp: xr.Dataset, var_name: str, mask: xr.Dataset) -> xr.Dataset:
-        """
-        Apply a mask to the precipitation data.
-
-        Parameters:
-        - temp (xarray.Dataset): Dataset containing precipitation data.
-        - var_name (str): Variable name to be masked.
-        - mask (xarray.Dataset): Dataset containing mask data.
-
-        Returns:
-        - xarray.Dataset: Precipitation data with mask applied.
-        """
-        f_temp = temp.copy()
-        f_temp['mask'] = mask.country
-        threshold = 0.8
-        country_mask = f_temp['mask'] >= threshold
-        f_temp[var_name] = xr.where(country_mask, f_temp[var_name], float('nan'))
-        return f_temp.drop_vars('mask')
-
-    def calculate_max_consecutive_dry_days(self) -> xr.DataArray:
+    def max_consecutive_dry_days(self):
         """
         Calculate the maximum number of consecutive dry days in each year.
 
         Returns:
         - xarray.DataArray: Maximum number of consecutive dry days.
+
+        Complexity:
+        O(N) for calculating cumulative sums and transformations, where N is the number of time steps in the dataset.
         """
-
-        preci =  self.apply_mask(self.precipitation, "tp", self.mask)
+        preci = self.apply_mask("tp")
         precipitation_per_day = preci['tp'].resample(time='d').sum()
-        precipitation_per_day = precipitation_per_day.to_dataset()
-        precipitation_per_day['days_below_thresholds'] = xr.where(precipitation_per_day.tp < 0.001, 1, 0)
-        day_sum = precipitation_per_day['days_below_thresholds'].resample(time='d').sum()
-        days_above_thresholds = xr.where(day_sum < 0.001, 1, 0)
+        days_below_thresholds = xr.where(precipitation_per_day < 0.001, 1, 0)
+        days_above_thresholds = xr.where(days_below_thresholds == 0, 1, 0)
 
-        precipitation_per_day['das'] = precipitation_per_day['days_below_thresholds'].cumsum(dim='time') - precipitation_per_day['days_below_thresholds'].cumsum(dim='time').where(precipitation_per_day['days_below_thresholds'] == 0).ffill(dim='time').fillna(0)
-        precipitation_per_day = self.apply_mask(precipitation_per_day,"das", self.mask)
-        days = days_above_thresholds.cumsum(dim='time') - days_above_thresholds.cumsum(dim='time').where(days_above_thresholds == 0).ffill(dim='time').fillna(0)
-        #max_days_drought_per_year = days.groupby('time.year').max()
+        cumsum_below = days_below_thresholds.cumsum(dim='time')
+        das = cumsum_below - cumsum_below.where(days_below_thresholds == 0).ffill(dim='time').fillna(0)
+
+        cumsum_above = days_above_thresholds.cumsum(dim='time')
+        days = cumsum_above - cumsum_above.where(days_above_thresholds == 0).ffill(dim='time').fillna(0)
+        
         return days
 
-    def standardize_max_consecutive_dry_days(self, reference_period, area= None) -> xr.DataArray:
+    def std_max_consecutive_dry_days(self, reference_period, area=None):
         """
         Standardize the maximum number of consecutive dry days.
 
+        Parameters:
+        - reference_period (tuple): A tuple containing the start and end dates of the reference period.
+        - area (bool): If True, calculate the area-averaged standardized metric. Default is None.
+
         Returns:
         - xarray.DataArray: Standardized maximum number of consecutive dry days.
+
+        Complexity:
+        O(N + R) for calculating maximum consecutive dry days and standardizing, where N is the number of time steps and R is the size of the reference period.
         """
-
-        max_days_drought_per_month = self.calculate_max_consecutive_dry_days().resample(time='m').max()
-        max_days_drought_per_month_reference = max_days_drought_per_month.sel(time=slice(reference_period[0], reference_period[1]))
-        time_index = max_days_drought_per_month.time.dt.month
-        cdd_mean = max_days_drought_per_month_reference.groupby("time.month").mean().sel(month=time_index)
-        cdd_std = max_days_drought_per_month_reference.groupby("time.month").std().sel(month=time_index)
-        cdd = ((max_days_drought_per_month - cdd_mean) / cdd_std).drop("month")
-
-        area = False if area is None else area
-        if (not area):
-            return cdd
-        else:
-            return cdd.mean(dim=['latitude', 'longitude'])
-        
-
+        max_days_drought_per_month = self.max_consecutive_dry_days().resample(time='m').max()
+        return self.standardize_metric(max_days_drought_per_month, reference_period, area)

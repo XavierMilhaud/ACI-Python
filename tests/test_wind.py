@@ -62,12 +62,12 @@ class TestWindComponent(unittest.TestCase):
         os.remove(self.v10_path)
         os.remove(self.mask_path)
 
-    def test_calculate_wind_power(self):
+    def test_wind_power(self):
         """
-        Test the calculate_wind_power method.
+        Test the wind_power method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        wind_power = wind.calculate_wind_power()
+        wind_power = wind.wind_power()
 
         # Verify that wind_power is a DataArray
         self.assertIsInstance(wind_power, xr.DataArray)
@@ -81,12 +81,12 @@ class TestWindComponent(unittest.TestCase):
         self.assertGreaterEqual(wind_power['time'].min(), np.datetime64('2000-01-01'))
         self.assertLessEqual(wind_power['time'].max(), np.datetime64('2020-12-31'))
 
-    def test_calculate_wind_thresholds(self):
+    def test_wind_thresholds(self):
         """
-        Test the calculate_wind_thresholds method.
+        Test the wind_thresholds method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        wind_thresholds = wind.calculate_wind_thresholds(self.reference_period)
+        wind_thresholds = wind.wind_thresholds(self.reference_period)
 
         # Verify that wind_thresholds is a DataArray
         self.assertIsInstance(wind_thresholds, xr.DataArray)
@@ -100,12 +100,12 @@ class TestWindComponent(unittest.TestCase):
         self.assertGreaterEqual(wind_thresholds['time'].min(), np.datetime64('2000-01-01'))
         self.assertLessEqual(wind_thresholds['time'].max(), np.datetime64('2020-12-31'))
 
-    def test_calculate_days_above_thresholds(self):
+    def test_days_above_thresholds(self):
         """
-        Test the calculate_days_above_thresholds method.
+        Test the days_above_thresholds method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        days_above_thresholds = wind.calculate_days_above_thresholds(self.reference_period)
+        days_above_thresholds = wind.days_above_thresholds(self.reference_period)
 
         # Verify that days_above_thresholds is a DataArray
         self.assertIsInstance(days_above_thresholds, xr.DataArray)
@@ -119,12 +119,12 @@ class TestWindComponent(unittest.TestCase):
         self.assertGreaterEqual(days_above_thresholds['time'].min(), np.datetime64('2000-01-01'))
         self.assertLessEqual(days_above_thresholds['time'].max(), np.datetime64('2020-12-31'))
 
-    def test_calculate_wind_exceedance_frequency(self):
+    def test_wind_exceedance_frequency(self):
         """
-        Test the calculate_wind_exceedance_frequency method.
+        Test the wind_exceedance_frequency method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        wind_exceedance_frequency = wind.calculate_wind_exceedance_frequency(self.reference_period)
+        wind_exceedance_frequency = wind.wind_exceedance_frequency(self.reference_period)
 
         # Verify that wind_exceedance_frequency is a DataArray
         self.assertIsInstance(wind_exceedance_frequency, xr.DataArray)
@@ -138,12 +138,12 @@ class TestWindComponent(unittest.TestCase):
         self.assertGreaterEqual(wind_exceedance_frequency['time'].min(), np.datetime64('2000-01-01'))
         self.assertLessEqual(wind_exceedance_frequency['time'].max(), np.datetime64('2020-12-31'))
 
-    def test_standardize_wind_exceedance_frequency(self):
+    def test_std_wind_exceedance_frequency(self):
         """
-        Test the standardize_wind_exceedance_frequency method.
+        Test the std_wind_exceedance_frequency method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        standardized_frequency = wind.standardize_wind_exceedance_frequency(self.reference_period)
+        standardized_frequency = wind.std_wind_exceedance_frequency(self.reference_period)
 
         # Verify that standardized_frequency is a DataArray
         self.assertIsInstance(standardized_frequency, xr.DataArray)
@@ -169,7 +169,7 @@ class TestWindComponent(unittest.TestCase):
         self.assertAlmostEqual(std_standardized_frequency, 1, places=1)
 
     
-    def test_standardize_wind_exceedance_frequency(self):
+    def test_std_wind_exceedance_frequency(self):
         test_cases = ['test1', 'test2', 'test3', 'test4']
 
         for test_case in test_cases:
@@ -183,7 +183,7 @@ class TestWindComponent(unittest.TestCase):
                 reference_anomalies = xr.open_dataset(reference_anomalies_path)
                 wind_component = WindComponent(u10_path, v10_path, mask_path)
 
-                calculated_anomalies = wind_component.standardize_wind_exceedance_frequency(self.reference_period_bis, area=True)
+                calculated_anomalies = wind_component.std_wind_exceedance_frequency(self.reference_period_bis, area=True)
 
                 reference_variable_name = list(reference_anomalies.data_vars)[0]
                 np.testing.assert_allclose(calculated_anomalies.values, reference_anomalies[reference_variable_name].values)

@@ -72,7 +72,7 @@ class Era5var:
                         'format': 'netcdf',
                     },
                     f'{directory}/{self.areaName}_{self.variableName}_{year}.nc')
-            
+
             self.merge_files(directory)
         else:
             # Request for each month separately

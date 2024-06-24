@@ -1,11 +1,9 @@
 import pandas as pd
-import xarray as xr
 import precipitationcomponent as pc
 import windcomponent as wc
 import sealevel as sl
 import droughtcomponent as dc
 import temperaturecomponent as tc
-from datetime import datetime
 from pandas.tseries.offsets import MonthEnd
 
 class ActuarialClimateIndex:
@@ -14,7 +12,8 @@ class ActuarialClimateIndex:
 
     Attributes:
         temperature_component (TemperatureComponent): Instance of the TemperatureComponent class.
-        precipitation_component (PrecipitationComponent): Instance of the PrecipitationComponent class.
+        precipitation_component (PrecipitationComponent): Instance of the PrecipitationComponent 
+        class.
         drought_component (DroughtComponent): Instance of the DroughtComponent class.
         wind_component (WindComponent): Instance of the WindComponent class.
         sealevel_component (SealevelComponent): Instance of the SealevelComponent class.
@@ -22,8 +21,8 @@ class ActuarialClimateIndex:
         reference_period (tuple): Tuple containing the start and end dates of the reference period.
     """
 
-    def __init__(self, temperature_data_path, precipitation_data_path, wind_u10_data_path, 
-                 wind_v10_data_path, country_abbrev, mask_data_path, study_period, reference_period):
+    def __init__(self, temperature_data_path, precipitation_data_path, wind_u10_data_path,
+            wind_v10_data_path, country_abbrev, mask_data_path, study_period, reference_period):
         """
         Initialize the ACI object with its components.
 
@@ -35,13 +34,17 @@ class ActuarialClimateIndex:
             country_abbrev (str): Country abbreviation for sea level data.
             mask_data_path (str): Path to the mask data file.
             study_period (tuple): Tuple containing the start and end dates of the study period.
-            reference_period (tuple): Tuple containing the start and end dates of the reference period.
+            reference_period (tuple): Tuple containing the start and end dates of the 
+            reference period.
         """
         self.temperature_component = tc.TemperatureComponent(temperature_data_path, mask_data_path)
-        self.precipitation_component = pc.PrecipitationComponent(precipitation_data_path, mask_data_path)
+        self.precipitation_component = pc.PrecipitationComponent(precipitation_data_path,
+                                                                 mask_data_path)
         self.drought_component = dc.DroughtComponent(precipitation_data_path, mask_data_path)
-        self.wind_component = wc.WindComponent(wind_u10_data_path, wind_v10_data_path, mask_data_path)
-        self.sealevel_component = sl.SeaLevelComponent(country_abbrev, study_period, reference_period)
+        self.wind_component = wc.WindComponent(wind_u10_data_path, wind_v10_data_path,
+                                               mask_data_path)
+        self.sealevel_component = sl.SeaLevelComponent(country_abbrev, study_period,
+                                                       reference_period)
         self.study_period = study_period
         self.reference_period = reference_period
 
@@ -62,7 +65,8 @@ class ActuarialClimateIndex:
         factor = 1 if factor is None else factor
 
         # Calculate anomalies and convert to DataFrames
-        preci_std = self.precipitation_component.monthly_max_anomaly("tp", 5, self.reference_period, True)
+        preci_std = self.precipitation_component.monthly_max_anomaly("tp", 5,
+                                                                     self.reference_period, True)
         p_df = preci_std.to_dataframe()
         p_df.columns = ["precipitation"]
 
@@ -70,7 +74,8 @@ class ActuarialClimateIndex:
         w_df = wind_std.to_dataframe(name="windpower")
         w_df.columns = ["windpower"]
 
-        drought_std = self.drought_component.std_max_consecutive_dry_days(self.reference_period, True)
+        drought_std = self.drought_component.std_max_consecutive_dry_days(self.reference_period,
+                                                                          True)
         cdd_df = drought_std.to_dataframe()
         cdd_df.columns = ["drought"]
 
@@ -98,6 +103,7 @@ class ActuarialClimateIndex:
         # Calculate ACI
         IACF_composites["ACI"] = (IACF_composites["T90"] - IACF_composites["T10"] +
                                   IACF_composites["precipitation"] + IACF_composites["drought"] +
-                                  factor * IACF_composites["sea_mean"] + IACF_composites["windpower"]) / 6
+                                  factor * IACF_composites["sea_mean"] +
+                                  IACF_composites["windpower"]) / 6
 
         return IACF_composites

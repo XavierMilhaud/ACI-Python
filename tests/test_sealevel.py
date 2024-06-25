@@ -3,10 +3,10 @@ import os
 import pandas as pd
 import numpy as np
 import sys
-
+from sealevel import SeaLevelComponent
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from sealevel import SeaLevelComponent
+
 
 class TestSeaLevelComponent(unittest.TestCase):
 
@@ -19,11 +19,11 @@ class TestSeaLevelComponent(unittest.TestCase):
         self.reference_period = ('1960-01-01', '1964-12-31')
         self.sea_level_component = SeaLevelComponent(self.country_abrev, self.study_period, self.reference_period)
         self.data_path = "../data/sealevel_data_USA"
-        
+
         # Creating test data directory and files
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
-        
+
         # Creating a sample sea level data file
         dates = pd.date_range('1960-01-01', '1964-12-31', freq='M')
         values = np.random.rand(len(dates)) * 100
@@ -125,7 +125,7 @@ class TestSeaLevelComponent(unittest.TestCase):
                     self.study_period_bis,
                     self.reference_period_bis
                 )
-                sea_level_component.data = sea_level_data  
+                sea_level_component.data = sea_level_data
 
                 # Calculer les anomalies
                 calculated_anomalies = sea_level_component.process()

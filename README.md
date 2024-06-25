@@ -17,7 +17,7 @@ make clean
 It is possible to run the current tests implemented by processing : 
 
 ```bash
-make run
+make test
 ```
 
 ## Installation

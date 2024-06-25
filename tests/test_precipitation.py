@@ -5,9 +5,9 @@ import pandas as pd
 import os
 import sys
 import warnings
+from precipitationcomponent import PrecipitationComponent
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from precipitationcomponent import PrecipitationComponent
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -17,7 +17,7 @@ class TestPrecipitation(unittest.TestCase):
         """
         Setup test data.
         """
-        self.mask_path = "test_mask.nc" 
+        self.mask_path = "test_mask.nc"
         times = pd.date_range('2000-01-01', '2020-12-31', freq='D')
         latitudes = np.arange(48.80, 48.90, 0.1)
         longitudes = np.arange(2.20, 2.30, 0.1)
@@ -90,22 +90,22 @@ class TestPrecipitation(unittest.TestCase):
         times = pd.date_range('2000-01-01', '2020-12-31', freq='D')
         latitudes = np.arange(48.80, 48.90, 0.1)
         longitudes = np.arange(2.20, 2.30, 0.1)
-        
+
         # All zeros for no precipitation
         precipitation_data = np.zeros((len(times), len(latitudes), len(longitudes)))
-        
+
         data = xr.Dataset(
             {'tp': (['time', 'latitude', 'longitude'], precipitation_data)},
             coords={'time': times, 'latitude': latitudes, 'longitude': longitudes}
         )
         data.to_netcdf(self.data_path)
-        
+
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
-        
+
         anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
-        
+
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when there is no precipitation.")
-    
+
     def test_constant_precipitation(self):
         """
         Test with constant precipitation.
@@ -113,22 +113,21 @@ class TestPrecipitation(unittest.TestCase):
         times = pd.date_range('2000-01-01', '2020-12-31', freq='D')
         latitudes = np.arange(48.80, 48.90, 0.1)
         longitudes = np.arange(2.20, 2.30, 0.1)
-        
+
         # Constant precipitation value
         precipitation_data = np.full((len(times), len(latitudes), len(longitudes)), 10)
-        
+
         data = xr.Dataset(
             {'tp': (['time', 'latitude', 'longitude'], precipitation_data)},
             coords={'time': times, 'latitude': latitudes, 'longitude': longitudes}
         )
         data.to_netcdf(self.data_path)
-        
-        precipitation = PrecipitationComponent(self.data_path, self.mask_path)
-               
-        anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
-        
-        self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant.")
 
+        precipitation = PrecipitationComponent(self.data_path, self.mask_path)
+ 
+        anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
+
+        self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant.")
 
     def test_monthly_max_anomaly(self):
         test_cases = ['test1', 'test2', 'test3', 'test4']
@@ -150,6 +149,7 @@ class TestPrecipitation(unittest.TestCase):
 
                 # Comparer avec les anomalies de référence
                 np.testing.assert_allclose(anomalies.values, reference_anomalies['tp'].values)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

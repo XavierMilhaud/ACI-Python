@@ -24,6 +24,7 @@ jobs:
     - name: Create environment and install dependencies
       run: |
         conda install -y python=3.9
+        conda config --set solver_lib mamba
         conda env update --file environment.yml --name base
     - name: Lint with flake8
       run: |

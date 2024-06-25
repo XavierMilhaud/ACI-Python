@@ -34,5 +34,6 @@ jobs:
     - name: Test with unittest
       run: |
         conda init
+        source /root/.bashrc
         conda activate aci
         make test

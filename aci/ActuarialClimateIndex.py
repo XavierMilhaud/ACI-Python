@@ -6,13 +6,14 @@ import droughtcomponent as dc
 import temperaturecomponent as tc
 from pandas.tseries.offsets import MonthEnd
 
+
 class ActuarialClimateIndex:
     """
     Class to calculate the Actuaries Climate Index (ACI) from its components.
 
     Attributes:
         temperature_component (TemperatureComponent): Instance of the TemperatureComponent class.
-        precipitation_component (PrecipitationComponent): Instance of the PrecipitationComponent 
+        precipitation_component (PrecipitationComponent): Instance of the PrecipitationComponent
         class.
         drought_component (DroughtComponent): Instance of the DroughtComponent class.
         wind_component (WindComponent): Instance of the WindComponent class.
@@ -22,7 +23,7 @@ class ActuarialClimateIndex:
     """
 
     def __init__(self, temperature_data_path, precipitation_data_path, wind_u10_data_path,
-            wind_v10_data_path, country_abbrev, mask_data_path, study_period, reference_period):
+                 wind_v10_data_path, country_abbrev, mask_data_path, study_period, reference_period):
         """
         Initialize the ACI object with its components.
 
@@ -34,7 +35,7 @@ class ActuarialClimateIndex:
             country_abbrev (str): Country abbreviation for sea level data.
             mask_data_path (str): Path to the mask data file.
             study_period (tuple): Tuple containing the start and end dates of the study period.
-            reference_period (tuple): Tuple containing the start and end dates of the 
+            reference_period (tuple): Tuple containing the start and end dates of the
             reference period.
         """
         self.temperature_component = tc.TemperatureComponent(temperature_data_path, mask_data_path)
@@ -57,7 +58,7 @@ class ActuarialClimateIndex:
 
         Returns:
             pd.DataFrame: DataFrame containing the ACI values.
-        
+
         Complexity:
             Time: O(n) where n is the number of data points in the study period.
             Space: O(n) for storing intermediate DataFrames.

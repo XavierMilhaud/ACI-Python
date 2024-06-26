@@ -3,8 +3,6 @@
 import os
 import subprocess
 import cdsapi
-import xarray as xr
-import numpy as np
 
 
 class Era5var:
@@ -14,7 +12,8 @@ class Era5var:
     Attributes:
         area (str): Name of the area for which data is required (e.g., 'France', 'London').
         coordinates (list): List of north, west, south, and east coordinates that bound the area.
-        years (str): Beginning and end year for extraction separated by a dash (e.g., '1961-1963') or a single year (e.g., '1961').
+        years (str): Beginning and end year for extraction separated by a dash (e.g., '1961-1963') or a
+        single year (e.g., '1961').
         variableName (str): Name of the variable to extract (e.g., 'total_precipitation').
         monthly (bool): If True, the extraction will be done month by month and then merged (useful for large data).
     """
@@ -86,15 +85,15 @@ class Era5var:
                             'variable': self.variableName,
                             'year': year,
                             'month': month_str,
-                            'day': [f'{day:02d}' for day in range(1,32)],
-                            'time': [ f'{hour:02d}:00' for hour in range(24)],
+                            'day': [f'{day:02d}' for day in range(1, 32)],
+                            'time': [f'{hour:02d}:00' for hour in range(24)],
                             'area': self.coordinates,
                             'format': 'netcdf',
                         },
                         f'{directory}/{self.areaName}_{self.variableName}_{year}_{month_str}.nc')
 
-            # Merge monthly files
-            #self.merge_files(directory)
+    #       Merge monthly files
+    #       self.merge_files(directory)
 
     def merge_files(self, directory):
         """
@@ -104,8 +103,8 @@ class Era5var:
             directory (str): Directory containing the NetCDF files.
         """
         os.chdir(directory)
-        if len(self.yearsIncluded)==1:
-            merged_filename =  f'{self.areaName}_{self.variableName}_{self.yearsIncluded[0]}_complete.nc'
+        if len(self.yearsIncluded) == 1:
+            merged_filename = f'{self.areaName}_{self.variableName}_{self.yearsIncluded[0]}_complete.nc'
         else:
             merged_filename = f'{self.areaName}_{self.variableName}_{self.yearsIncluded[0]}_{self.yearsIncluded[-1]}.nc'
         merge_command = f'cdo -b F32 mergetime *.nc {merged_filename}'
@@ -152,5 +151,3 @@ if __name__ == "__main__":
     # test.requestMask('FR')
 
     test = Era5var('PartOfParis', [49, 1, 48, 3], '1960-2023', '2m_temperature', monthly=True)
-
-

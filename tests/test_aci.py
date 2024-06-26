@@ -5,9 +5,9 @@ import pandas as pd
 import os
 import sys
 import warnings
-from ActuarialClimateIndex import ActuarialClimateIndex
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
+from ActuarialClimateIndex import ActuarialClimateIndex
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 

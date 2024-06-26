@@ -5,9 +5,9 @@ import pandas as pd
 import os
 import sys
 import warnings
-from precipitationcomponent import PrecipitationComponent
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
+from precipitationcomponent import PrecipitationComponent
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 

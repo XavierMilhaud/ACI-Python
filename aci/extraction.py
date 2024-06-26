@@ -35,4 +35,3 @@ df = pd.DataFrame(rows, columns=headers)
 df.to_csv('psmsl_data.csv', index=False)
 
 print("Data has been saved to psmsl_data.csv")
-

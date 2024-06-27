@@ -14,21 +14,21 @@ import zipfile
 
 
 # URL du fichier à télécharger
-url = "https://psmsl.org/data/obtaining/rlr.monthly.data/rlr_monthly.zip"
+URL = "https://psmsl.org/data/obtaining/rlr.monthly.data/rlr_monthly.zip"
 
 # Chemin vers le répertoire de destination
-destination_dir = "../data/required_data"
-zip_file_path = os.path.join(destination_dir, "rlr_monthly.zip")
-extract_path = os.path.join(destination_dir, "rlr_monthly")
+DESTINATION_DIR = "../data/required_data"
+zip_file_path = os.path.join(DESTINATION_DIR, "rlr_monthly.zip")
+extract_path = os.path.join(DESTINATION_DIR, "rlr_monthly")
 
 # Vérifie si le dossier rlr_monthly existe déjà
 if not os.path.exists(extract_path):
     # Crée le répertoire de destination s'il n'existe pas
-    os.makedirs(destination_dir, exist_ok=True)
+    os.makedirs(DESTINATION_DIR, exist_ok=True)
 
     # Télécharge le fichier
     # print("Téléchargement du fichier...")
-    response = requests.get(url)
+    response = requests.get(URL)
     with open(zip_file_path, 'wb') as file:
         file.write(response.content)
     # print("Téléchargement terminé.")
@@ -36,7 +36,7 @@ if not os.path.exists(extract_path):
     # Décompresse le fichier
     # print("Décompression du fichier...")
     with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-        zip_ref.extractall(destination_dir)
+        zip_ref.extractall(DESTINATION_DIR)
     # print("Décompression terminée.")
 
     # Supprime le fichier zip après extraction
@@ -56,7 +56,7 @@ except FileNotFoundError:
     exit(1)
 
 # Directory containing the .rlrdata files
-source_dir = '../data/required_data/rlr_monthly/data'
+SOURCE_DIR = '../data/required_data/rlr_monthly/data'
 
 
 # Function to copy and rename files based on country abbreviation
@@ -77,7 +77,7 @@ def copy_and_rename_files_by_country(abbreviation):
 
     # Iterate over each ID and copy the associated file, then rename it
     for file_id in filtered_df['ID']:
-        source_file = os.path.join(source_dir, f'{file_id}.rlrdata')
+        source_file = os.path.join(SOURCE_DIR, f'{file_id}.rlrdata')
         if os.path.exists(source_file):
             destination_file = os.path.join(target_dir, f'{file_id}.rlrdata')
             shutil.copy(source_file, destination_file)

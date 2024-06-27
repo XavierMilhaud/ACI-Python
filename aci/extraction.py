@@ -5,10 +5,10 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 # URL of the page containing the table
-url = "https://psmsl.org/data/obtaining/index.php"
+URL = "https://psmsl.org/data/obtaining/index.php"
 
 # Send a request to fetch the HTML content
-response = requests.get(url)
+response = requests.get(URL)
 response.raise_for_status()  # Ensure we notice bad responses
 
 # Parse the HTML content using BeautifulSoup

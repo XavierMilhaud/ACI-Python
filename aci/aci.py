@@ -49,15 +49,15 @@ class ActuarialClimateIndex:
         self.study_period = study_period
         self.reference_period = reference_period
 
-    def ACI(self, factor=None):
+    def calculate_aci(self, factor=None):
         """
-        Calculate the Actuaries Climate Index (ACI).
+        Calculate the Actuaries Climate Index (calculate_aci).
 
         Parameters:
             factor (float): Erosion factor, equals 1 by default.
 
         Returns:
-            pd.DataFrame: DataFrame containing the ACI values.
+            pd.DataFrame: DataFrame containing the calculate_aci values.
 
         Complexity:
             Time: O(n) where n is the number of data points in the study period.
@@ -99,12 +99,12 @@ class ActuarialClimateIndex:
         df2 = pd.merge(df1, cdd_df["drought"], left_index=True, right_index=True)
         df3 = pd.merge(df2, sea_df["sea_mean"], left_index=True, right_index=True)
         df4 = pd.merge(df3, t90_df["T90"], left_index=True, right_index=True)
-        IACF_composites = pd.merge(df4, t10_df["T10"], left_index=True, right_index=True)
+        aci_composites = pd.merge(df4, t10_df["T10"], left_index=True, right_index=True)
 
         # Calculate ACI
-        IACF_composites["ACI"] = (IACF_composites["T90"] - IACF_composites["T10"] +
-                                  IACF_composites["precipitation"] + IACF_composites["drought"] +
-                                  factor * IACF_composites["sea_mean"] +
-                                  IACF_composites["windpower"]) / 6
+        aci_composites["ACI"] = (aci_composites["T90"] - aci_composites["T10"] +
+                                  aci_composites["precipitation"] + aci_composites["drought"] +
+                                  factor * aci_composites["sea_mean"] +
+                                  aci_composites["windpower"]) / 6
 
-        return IACF_composites
+        return aci_composites

@@ -86,7 +86,7 @@ class TestActuarialClimateIndex(unittest.TestCase):
             self.reference_period
         )
 
-        aci_value = aci.ACI()
+        aci_value = aci.calculate_aci()
 
         self.assertIsInstance(aci_value, pd.DataFrame)
         self.assertIn('ACI', aci_value.columns)

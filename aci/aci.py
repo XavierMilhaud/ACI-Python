@@ -1,9 +1,9 @@
 import pandas as pd
-import precipitationcomponent as pc
-import windcomponent as wc
-import sealevel as sl
-import droughtcomponent as dc
-import temperaturecomponent as tc
+import components.precipitation as pc
+import components.wind as wc
+import components.sealevel as sl
+import components.drought as dc
+import components.temperature as tc
 from pandas.tseries.offsets import MonthEnd
 
 

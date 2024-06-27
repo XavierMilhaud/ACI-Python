@@ -7,7 +7,7 @@ import sys
 import warnings
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from ActuarialClimateIndex import ActuarialClimateIndex
+from aci import ActuarialClimateIndex
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 

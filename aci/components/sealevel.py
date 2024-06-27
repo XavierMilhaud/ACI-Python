@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 import numpy as np
-import getSeaLevelData as gd
-from component import Component
+import request_sealevel_data as gd
+from components.component import Component
 
 
 class SeaLevelComponent(Component):

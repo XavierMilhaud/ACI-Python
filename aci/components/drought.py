@@ -1,5 +1,5 @@
 import xarray as xr
-from component import Component
+from components.component import Component
 
 
 class DroughtComponent(Component):

@@ -102,9 +102,11 @@ class ActuarialClimateIndex:
         aci_composites = pd.merge(df4, t10_df["T10"], left_index=True, right_index=True)
 
         # Calculate ACI
-        aci_composites["ACI"] = (aci_composites["T90"] - aci_composites["T10"] +
-                                  aci_composites["precipitation"] + aci_composites["drought"] +
-                                  factor * aci_composites["sea_mean"] +
-                                  aci_composites["windpower"]) / 6
+        aci_composites["ACI"] = (aci_composites["T90"]
+                                 - aci_composites["T10"]
+                                 + aci_composites["precipitation"]
+                                 + aci_composites["drought"]
+                                 + factor * aci_composites["sea_mean"]
+                                 + aci_composites["windpower"]) / 6
 
         return aci_composites

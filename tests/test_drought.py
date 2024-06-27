@@ -132,11 +132,11 @@ class TestDrought(unittest.TestCase):
         cal = drought.max_consecutive_dry_days()
 
         self.assertTrue(np.all(np.isnan(anomalies)),
-        "Anomalies should be NaN when precipitation is constant below the threshold"
-        )
+                        "Anomalies should be NaN when precipitation is constant below the threshold"
+                    )
         self.assertTrue(np.all(cal == cal[0, 0, 0]),
-        "Max consecutive dry days should be the same when precipitation is constant and below the threshold."
-        )
+                        "Max consecutive dry days should be the same when precipitation is constant and below the threshold."
+                    )
 
     def test_standardize_drought(self):
         """

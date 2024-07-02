@@ -41,9 +41,6 @@ class DroughtComponent(Component):
         days_below_thresholds = xr.where(precipitation_per_day < 0.001, 1, 0)
         days_above_thresholds = xr.where(days_below_thresholds == 0, 1, 0)
 
-        cumsum_below = days_below_thresholds.cumsum(dim='time')
-        das = cumsum_below - cumsum_below.where(days_below_thresholds == 0).ffill(dim='time').fillna(0)
-
         cumsum_above = days_above_thresholds.cumsum(dim='time')
         days = cumsum_above - cumsum_above.where(days_above_thresholds == 0).ffill(dim='time').fillna(0)
 

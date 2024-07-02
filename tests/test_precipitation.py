@@ -130,7 +130,7 @@ class TestPrecipitation(unittest.TestCase):
 
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant.")
 
-    def test_monthly_max_anomaly(self):
+    def test_monthly_max_anomaly_bis(self):
         test_cases = ['test1', 'test2', 'test3', 'test4']
 
         for test_case in test_cases:

@@ -168,7 +168,7 @@ class TestWindComponent(unittest.TestCase):
         self.assertFalse(np.isnan(std_standardized_frequency), "Std standardized frequency should not be NaN.")
         self.assertAlmostEqual(std_standardized_frequency, 1, places=1)
 
-    def test_std_wind_exceedance_frequency(self):
+    def test_std_wind_exceedance_frequency_bis(self):
         test_cases = ['test1', 'test2', 'test3', 'test4']
 
         for test_case in test_cases:

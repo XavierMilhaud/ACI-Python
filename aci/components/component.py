@@ -1,6 +1,6 @@
 import xarray as xr
-import numpy as np
 import warnings
+
 
 class Component:
     """
@@ -23,12 +23,15 @@ class Component:
             file_name (str): The file name of the dataset.
         """
         # Ignore specific warning about is_monotonic
-        warnings.filterwarnings("ignore", category=FutureWarning, message="is_monotonic is deprecated and will be removed in a future version. Use is_monotonic_increasing instead.")
-        
+        warnings.filterwarnings(
+            "ignore",
+            category=FutureWarning,
+            message="is_monotonic is deprecated and will be removed in a" +
+            " future version. Use is_monotonic_increasing instead.")
+
         self.array = array
         self.mask = mask
         self.file_name = file_name
-    
 
     def apply_mask(self, var_name, threshold=0.8):
         """
@@ -43,18 +46,17 @@ class Component:
         """
         if self.array is None or self.mask is None:
             raise ValueError("Data not loaded. Please ensure precipitation and mask data are loaded.")
-        
+
         f_temp = self.array.copy()
         f_temp['mask'] = self.mask.country
-        
+
         # Create a mask based on the threshold
         country_mask = f_temp['mask'] >= threshold
-        
+
         # Apply the mask to the precipitation data
         f_temp[var_name] = xr.where(country_mask, f_temp[var_name], float('nan'))
-        
-        return f_temp.drop_vars('mask')
 
+        return f_temp.drop_vars('mask')
 
     def standardize_metric(self, metric, reference_period, area=None):
         """

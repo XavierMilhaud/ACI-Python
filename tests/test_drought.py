@@ -7,9 +7,10 @@ import sys
 import warnings
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from droughtcomponent import DroughtComponent
+from components.drought import DroughtComponent
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 class TestDrought(unittest.TestCase):
 
@@ -92,20 +93,20 @@ class TestDrought(unittest.TestCase):
         times = pd.date_range('2000-01-01', '2020-12-31', freq='D')
         latitudes = np.arange(48.80, 48.90, 0.1)
         longitudes = np.arange(2.20, 2.30, 0.1)
-        
+
         # All zeros for no precipitation
         precipitation_data = np.zeros((len(times), len(latitudes), len(longitudes)))
-        
+
         data = xr.Dataset(
             {'tp': (['time', 'latitude', 'longitude'], precipitation_data)},
             coords={'time': times, 'latitude': latitudes, 'longitude': longitudes}
         )
         data.to_netcdf(self.data_path)
-        
+
         drought = DroughtComponent(self.data_path, self.mask_path)
-        
+
         anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
-        
+
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when there is no precipitation.")
     
     def test_constant_precipitation(self):
@@ -115,23 +116,27 @@ class TestDrought(unittest.TestCase):
         times = pd.date_range('2000-01-01', '2020-12-31', freq='D')
         latitudes = np.arange(48.80, 48.90, 0.1)
         longitudes = np.arange(2.20, 2.30, 0.1)
-        
+
         # Constant precipitation value (below the threshold to simulate dry days)
         precipitation_data = np.full((len(times), len(latitudes), len(longitudes)), 0.0005)
-        
+
         data = xr.Dataset(
             {'tp': (['time', 'latitude', 'longitude'], precipitation_data)},
             coords={'time': times, 'latitude': latitudes, 'longitude': longitudes}
         )
         data.to_netcdf(self.data_path)
-        
+
         drought = DroughtComponent(self.data_path, self.mask_path)
-        
+
         anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
         cal = drought.max_consecutive_dry_days()
 
-        self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant below the threshold")
-        self.assertTrue(np.all(cal == cal[0, 0, 0]), "Max consecutive dry days should be the same when precipitation is constant and below the threshold.")
+        self.assertTrue(np.all(np.isnan(anomalies)),
+                        "Anomalies should be NaN when precipitation is constant below the threshold"
+                    )
+        self.assertTrue(np.all(cal == cal[0, 0, 0]),
+                        "Max consecutive dry days should be the same when precipitation is constant and below the threshold."
+                    )
 
     def test_standardize_drought(self):
         """
@@ -147,7 +152,7 @@ class TestDrought(unittest.TestCase):
 
                 # Calculer les anomalies
                 calculated_anomalies = drought_component.std_max_consecutive_dry_days(self.reference_period_bis, area=True)
-                
+
                 # Lire les anomalies de référence
                 reference_anomalies = xr.open_dataset(reference_anomalies_path)
 
@@ -157,7 +162,6 @@ class TestDrought(unittest.TestCase):
                 reference_df.columns = ['time', 'reference_mean']
 
                 combined_df = pd.merge(calculated_df, reference_df, on='time', suffixes=('_calculated', '_reference')).dropna()
-
 
                 # Remplacer les valeurs infinies par un nombre très grand pour comparaison
                 combined_df['calculated_mean'].replace([np.inf, -np.inf], 1e10, inplace=True)
@@ -169,6 +173,7 @@ class TestDrought(unittest.TestCase):
                     check_less_precise=True,
                     check_names=False
                 )
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -1,6 +1,7 @@
 import xarray as xr
 import numpy as np
-from component import Component
+from components.component import Component
+
 
 class WindComponent(Component):
     """
@@ -32,7 +33,8 @@ class WindComponent(Component):
         Calculate daily wind power from wind u and v components.
 
         Args:
-        reference_period (tuple): if not None, the method computes daily wind power for the reference period (e.g : ('1960-01-01', '1961-12-31'))
+        reference_period (tuple): if not None, the method computes daily wind power for the
+        reference period (e.g : ('1960-01-01', '1961-12-31'))
 
         Returns:
         - xarray.DataArray: Daily wind power.

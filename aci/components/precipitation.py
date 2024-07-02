@@ -1,6 +1,6 @@
 import xarray as xr
-import numpy as np
-from component import Component
+from components.component import Component
+
 
 class PrecipitationComponent(Component):
     """
@@ -51,14 +51,16 @@ class PrecipitationComponent(Component):
         Args:
             var_name (str): The variable name in the precipitation data.
             window_size (int): The size of the rolling window in days.
-            reference_period (tuple): A tuple containing the start and end dates of the reference period (e.g., ('1961-01-01', '1989-12-31')).
+            reference_period (tuple): A tuple containing the start and end dates of
+            the reference period (e.g., ('1961-01-01', '1989-12-31')).
             area (bool): If True, calculate the area-averaged anomaly. Default is None.
 
         Returns:
             xarray.DataArray: The anomaly of maximum monthly precipitation.
 
         Complexity:
-        O(N + R) for calculating monthly maximum and standardizing, where N is the number of time steps and R is the size of the reference period.
+        O(N + R) for calculating monthly maximum and standardizing, where N is the number
+        of time steps and R is the size of the reference period.
         """
         monthly_max = self.monthly_max(var_name, window_size)
         return self.standardize_metric(monthly_max, reference_period, area)
@@ -88,14 +90,16 @@ class PrecipitationComponent(Component):
         Args:
             var_name (str): The variable name in the precipitation data.
             window_size (int): The size of the rolling window in days.
-            reference_period (tuple): A tuple containing the start and end dates of the reference period (e.g., ('1961-01-01', '1989-12-31')).
+            reference_period (tuple): A tuple containing the start and end dates of the reference
+            period (e.g., ('1961-01-01', '1989-12-31')).
             area (bool): If True, calculate the area-averaged anomaly. Default is None.
 
         Returns:
             xarray.DataArray: The anomaly of maximum seasonal precipitation.
 
         Complexity:
-        O(N + R) for calculating seasonal maximum and standardizing, where N is the number of time steps and R is the size of the reference period.
+        O(N + R) for calculating seasonal maximum and standardizing, where N is the number of time
+        steps and R is the size of the reference period.
         """
         seasonly_max = self.seasonly_max(var_name, window_size)
         return self.standardize_metric(seasonly_max, reference_period, area)

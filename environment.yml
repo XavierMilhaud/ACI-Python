@@ -1,4 +1,4 @@
-name: myenv
+name: aci
 channels:
   - conda-forge
   - defaults

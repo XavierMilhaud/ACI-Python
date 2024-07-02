@@ -1,6 +1,6 @@
 import xarray as xr
-import numpy as np
-from component import Component
+from components.component import Component
+
 
 class DroughtComponent(Component):
     """
@@ -41,12 +41,9 @@ class DroughtComponent(Component):
         days_below_thresholds = xr.where(precipitation_per_day < 0.001, 1, 0)
         days_above_thresholds = xr.where(days_below_thresholds == 0, 1, 0)
 
-        cumsum_below = days_below_thresholds.cumsum(dim='time')
-        das = cumsum_below - cumsum_below.where(days_below_thresholds == 0).ffill(dim='time').fillna(0)
-
         cumsum_above = days_above_thresholds.cumsum(dim='time')
         days = cumsum_above - cumsum_above.where(days_above_thresholds == 0).ffill(dim='time').fillna(0)
-        
+
         return days
 
     def std_max_consecutive_dry_days(self, reference_period, area=None):
@@ -61,7 +58,8 @@ class DroughtComponent(Component):
         - xarray.DataArray: Standardized maximum number of consecutive dry days.
 
         Complexity:
-        O(N + R) for calculating maximum consecutive dry days and standardizing, where N is the number of time steps and R is the size of the reference period.
+        O(N + R) for calculating maximum consecutive dry days and standardizing,
+        where N is the number of time steps and R is the size of the reference period.
         """
         max_days_drought_per_month = self.max_consecutive_dry_days().resample(time='m').max()
         return self.standardize_metric(max_days_drought_per_month, reference_period, area)

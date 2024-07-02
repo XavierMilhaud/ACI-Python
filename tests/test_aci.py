@@ -7,9 +7,10 @@ import sys
 import warnings
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from ActuarialClimateIndex import ActuarialClimateIndex
+from aci import ActuarialClimateIndex
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 class TestActuarialClimateIndex(unittest.TestCase):
 
@@ -75,20 +76,21 @@ class TestActuarialClimateIndex(unittest.TestCase):
 
     def test_aci_calculation(self):
         aci = ActuarialClimateIndex(
-            self.temperature_path, 
-            self.precipitation_path, 
-            self.wind_u10_path, 
-            self.wind_v10_path, 
-            self.country_abbrev, 
-            self.mask_path, 
-            self.study_period, 
+            self.temperature_path,
+            self.precipitation_path,
+            self.wind_u10_path,
+            self.wind_v10_path,
+            self.country_abbrev,
+            self.mask_path,
+            self.study_period,
             self.reference_period
         )
-        
-        aci_value = aci.ACI()
-        
+
+        aci_value = aci.calculate_aci()
+
         self.assertIsInstance(aci_value, pd.DataFrame)
         self.assertIn('ACI', aci_value.columns)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

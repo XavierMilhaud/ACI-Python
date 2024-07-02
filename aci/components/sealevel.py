@@ -1,8 +1,9 @@
 import os
 import pandas as pd
 import numpy as np
-import getSeaLevelData as gd
-from component import Component
+import request_sealevel_data as gd
+from components.component import Component
+
 
 class SeaLevelComponent(Component):
     """
@@ -77,7 +78,12 @@ class SeaLevelComponent(Component):
         for filename in os.listdir(self.directory):
             if filename.endswith('.txt'):
                 file_path = os.path.join(self.directory, filename)
-                temp_data = pd.read_csv(file_path, sep=";", names=["Date", f"Measurement_{filename[:-4]}", "2", "3"], skipinitialspace=True)
+                temp_data = pd.read_csv(
+                    file_path,
+                    sep=";",
+                    names=["Date", f"Measurement_{filename[:-4]}", "2", "3"],
+                    skipinitialspace=True
+                )
                 temp_data = temp_data[["Date", f"Measurement_{filename[:-4]}"]]
                 temp_data["Date"] = temp_data["Date"].astype(float)
                 temp_data.set_index("Date", inplace=True)
@@ -106,8 +112,8 @@ class SeaLevelComponent(Component):
         where N is the number of rows in the DataFrame.
         """
         month_mapping = {
-            "0417": "01", "125": "02", "2083": "03", "2917": "04", "375": "05", 
-            "4583": "06", "5417": "07", "625": "08", "7083": "09", "7917": "10", 
+            "0417": "01", "125": "02", "2083": "03", "2917": "04", "375": "05",
+            "4583": "06", "5417": "07", "625": "08", "7083": "09", "7917": "10",
             "875": "11", "9583": "12"
         }
 

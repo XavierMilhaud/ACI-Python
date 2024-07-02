@@ -7,9 +7,10 @@ import sys
 import warnings
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from temperaturecomponent import TemperatureComponent
+from components.temperature import TemperatureComponent
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 class TestTemperature(unittest.TestCase):
 
@@ -41,7 +42,7 @@ class TestTemperature(unittest.TestCase):
             coords={'lat': latitudes, 'lon': longitudes}
         )
         mask.to_netcdf(self.mask_path)
-        
+
         # Construction des chemins d'accès aux données de test stockées
 
         data_dir = '../data/tests_data/tests_data_temperature'
@@ -49,7 +50,6 @@ class TestTemperature(unittest.TestCase):
         self.mask_path_bis = os.path.join(data_dir, 'test1_mask.nc')
         self.reference_anomalies_t90_path = os.path.join(data_dir, 'test1_reference_anomalies_t90.nc')
         self.reference_anomalies_t10_path = os.path.join(data_dir, 'test1_reference_anomalies_t10.nc')
-
 
     def tearDown(self):
         """

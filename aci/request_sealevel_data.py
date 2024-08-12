@@ -1,103 +1,117 @@
-#!/usr/bin/env python3
-
 import os
 import shutil
 import pandas as pd
-import argparse
 import requests
 import zipfile
+import argparse
 
-
-# On rajoute à ce fichier un petit script python
-# pour télécharger des données sur le niveau de la
-# mer dans le cas où elles n'existent pas.
-
-
-# URL du fichier à télécharger
+# Constants
 URL = "https://psmsl.org/data/obtaining/rlr.monthly.data/rlr_monthly.zip"
-
-# Chemin vers le répertoire de destination
 DESTINATION_DIR = "../data/required_data"
-zip_file_path = os.path.join(DESTINATION_DIR, "rlr_monthly.zip")
-extract_path = os.path.join(DESTINATION_DIR, "rlr_monthly")
-
-# Vérifie si le dossier rlr_monthly existe déjà
-if not os.path.exists(extract_path):
-    # Crée le répertoire de destination s'il n'existe pas
-    os.makedirs(DESTINATION_DIR, exist_ok=True)
-
-    # Télécharge le fichier
-    # print("Téléchargement du fichier...")
-    response = requests.get(URL)
-    with open(zip_file_path, 'wb') as file:
-        file.write(response.content)
-    # print("Téléchargement terminé.")
-
-    # Décompresse le fichier
-    # print("Décompression du fichier...")
-    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-        zip_ref.extractall(DESTINATION_DIR)
-    # print("Décompression terminée.")
-
-    # Supprime le fichier zip après extraction
-    os.remove(zip_file_path)
-    # print("Fichier zip supprimé.")
-else:
-    print("Le dossier rlr_monthly existe déjà. Aucune action nécessaire.")
+ZIP_FILE_PATH = os.path.join(DESTINATION_DIR, "rlr_monthly.zip")
+EXTRACT_PATH = os.path.join(DESTINATION_DIR, "rlr_monthly")
+CSV_FILE_PATH = os.path.join(DESTINATION_DIR, 'psmsl_data.csv')
+SOURCE_DIR = os.path.join(EXTRACT_PATH, 'data')
 
 
-# Load the DataFrame A
-# Assuming A is a CSV file, replace 'path_to_dataframe.csv' with the actual path to your CSV
-try:
-    df = pd.read_csv('../data/required_data/psmsl_data.csv')
-    # print("DataFrame loaded successfully.")
-except FileNotFoundError:
-    print("CSV file not found. Please check the file path.")
-    exit(1)
+def download_and_extract_data():
+    """
+    Downloads and extracts the data from the given URL if the data
+    doesn't already exist.
+    """
+    if not os.path.exists(EXTRACT_PATH):
+        os.makedirs(DESTINATION_DIR, exist_ok=True)
+        response = requests.get(URL)
+        with open(ZIP_FILE_PATH, 'wb') as file:
+            file.write(response.content)
 
-# Directory containing the .rlrdata files
-SOURCE_DIR = '../data/required_data/rlr_monthly/data'
+        with zipfile.ZipFile(ZIP_FILE_PATH, 'r') as zip_ref:
+            zip_ref.extractall(DESTINATION_DIR)
+
+        os.remove(ZIP_FILE_PATH)
+        print("Data downloaded and extracted successfully.")
+    else:
+        print("The directory rlr_monthly already exists. No action needed.")
 
 
-# Function to copy and rename files based on country abbreviation
-def copy_and_rename_files_by_country(abbreviation):
-    # Directory to copy files to
+def load_dataframe():
+    """
+    Loads the data from a CSV file into a DataFrame.
+
+    Returns:
+    --------
+    pd.DataFrame:
+        The loaded DataFrame.
+    """
+    try:
+        df = pd.read_csv(CSV_FILE_PATH)
+        print("DataFrame loaded successfully.")
+        return df
+    except FileNotFoundError:
+        print("CSV file not found. Please check the file path.")
+        exit(1)
+
+
+def copy_and_rename_files_by_country(abbreviation, df):
+    """
+    Copies and renames files based on the country abbreviation.
+
+    Parameters:
+    -----------
+    abbreviation : str
+        The country abbreviation to filter by.
+    df : pd.DataFrame
+        The DataFrame containing the file information.
+    """
     target_dir = f'../data/sealevel_data_{abbreviation}'
 
-    # Ensure target directory exists
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
-        # print(f"Created target directory {target_dir}")
+        print(f"Created target directory {target_dir}")
 
-    # Filter DataFrame by country abbreviation
     filtered_df = df[df['Country'] == abbreviation]
     if filtered_df.empty:
         print(f"No entries found for country abbreviation {abbreviation}")
         return
 
-    # Iterate over each ID and copy the associated file, then rename it
     for file_id in filtered_df['ID']:
         source_file = os.path.join(SOURCE_DIR, f'{file_id}.rlrdata')
         if os.path.exists(source_file):
             destination_file = os.path.join(target_dir, f'{file_id}.rlrdata')
             shutil.copy(source_file, destination_file)
-            # print(f'Copied {source_file} to {destination_file}')
 
-            # Rename the copied file to .txt
             new_filename = os.path.join(target_dir, f'{file_id}.txt')
             os.rename(destination_file, new_filename)
-            # print(f'Renamed {destination_file} to {new_filename}')
         else:
             print(f'File {source_file} does not exist')
 
 
+def main(country_abbreviation):
+    """
+    Main function to download data, load DataFrame, and process files.
+
+    Parameters:
+    -----------
+    country_abbreviation : str
+        The country abbreviation to filter by.
+    """
+    download_and_extract_data()
+    df = load_dataframe()
+    copy_and_rename_files_by_country(country_abbreviation, df)
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Copy .rlrdata files based on country abbreviation and rename them to .txt.')
-    parser.add_argument('country_abbreviation', type=str, help='The country abbreviation to filter by')
+    parser = argparse.ArgumentParser(
+        description=(
+            'Copy .rlrdata files based on country abbreviation and '
+            'rename them to .txt.'
+        )
+    )
+    parser.add_argument(
+        'country_abbreviation',
+        type=str,
+        help='The country abbreviation to filter by'
+    )
     args = parser.parse_args()
 
-    # Print the country abbreviation for confirmation
-    print(f"Country abbreviation provided: {args.country_abbreviation}")
-
-    # Copy and rename the files
-    copy_and_rename_files_by_country(args.country_abbreviation)
+    main(args.country_abbreviation)

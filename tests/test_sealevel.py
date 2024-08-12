@@ -4,8 +4,12 @@ import pandas as pd
 import numpy as np
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from components.sealevel import SeaLevelComponent
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__), '../aci/components')))
+from sealevel import SeaLevelComponent
 
 
 class TestSeaLevelComponent(unittest.TestCase):
@@ -17,7 +21,10 @@ class TestSeaLevelComponent(unittest.TestCase):
         self.country_abrev = "USA"
         self.study_period = ('1960-01-01', '1969-12-31')
         self.reference_period = ('1960-01-01', '1964-12-31')
-        self.sea_level_component = SeaLevelComponent(self.country_abrev, self.study_period, self.reference_period)
+        self.sea_level_component = SeaLevelComponent(
+            self.country_abrev,
+            self.study_period,
+            self.reference_period)
         self.data_path = "../data/sealevel_data_USA"
 
         # Creating test data directory and files
@@ -28,8 +35,13 @@ class TestSeaLevelComponent(unittest.TestCase):
         dates = pd.date_range('1960-01-01', '1964-12-31', freq='M')
         values = np.random.rand(len(dates)) * 100
         df = pd.DataFrame({"Date": dates, "Measurement_test": values})
-        df['Date'] = df['Date'].apply(lambda x: float(f"{x.year}.{x.month:02}125"))
-        df.to_csv(os.path.join(self.data_path, "test_file.txt"), sep=";", index=False, header=False)
+        df['Date'] = df['Date'].apply(
+            lambda x: float(f"{x.year}.{x.month:02}125"))
+        df.to_csv(
+            os.path.join(self.data_path, "test_file.txt"),
+            sep=";",
+            index=False,
+            header=False)
 
         # Setting up testing parameters for last method
 
@@ -79,8 +91,14 @@ class TestSeaLevelComponent(unittest.TestCase):
         data = self.sea_level_component.load_data()
         data = self.sea_level_component.correct_date_format(data)
         data = self.sea_level_component.clean_data(data)
-        monthly_means = self.sea_level_component.compute_monthly_stats(data, self.reference_period, "means")
-        monthly_std_devs = self.sea_level_component.compute_monthly_stats(data, self.reference_period, "std")
+        monthly_means = self.sea_level_component.compute_monthly_stats(
+            data,
+            self.reference_period,
+            "means")
+        monthly_std_devs = self.sea_level_component.compute_monthly_stats(
+            data,
+            self.reference_period,
+            "std")
         self.assertIsInstance(monthly_means, pd.Series)
         self.assertIsInstance(monthly_std_devs, pd.Series)
         self.assertEqual(len(monthly_means), 12)
@@ -93,9 +111,19 @@ class TestSeaLevelComponent(unittest.TestCase):
         data = self.sea_level_component.load_data()
         data = self.sea_level_component.correct_date_format(data)
         data = self.sea_level_component.clean_data(data)
-        monthly_means = self.sea_level_component.compute_monthly_stats(data, self.reference_period, "means")
-        monthly_std_devs = self.sea_level_component.compute_monthly_stats(data, self.reference_period, "std")
-        standardized_data = self.sea_level_component.standardize_data(data, monthly_means, monthly_std_devs, self.study_period)
+        monthly_means = self.sea_level_component.compute_monthly_stats(
+            data,
+            self.reference_period,
+            "means")
+        monthly_std_devs = self.sea_level_component.compute_monthly_stats(
+            data,
+            self.reference_period,
+            "std")
+        standardized_data = self.sea_level_component.standardize_data(
+            data,
+            monthly_means,
+            monthly_std_devs,
+            self.study_period)
         self.assertIsInstance(standardized_data, pd.DataFrame)
         self.assertFalse(standardized_data.empty)
 
@@ -109,15 +137,25 @@ class TestSeaLevelComponent(unittest.TestCase):
 
     def test_standardize_sealevel(self):
         """
-        Test the standardize_sealevel method against precomputed reference anomalies.
+        Test the standardize_sealevel method against precomputed
+        reference anomalies.
         """
         for test_case in self.test_cases:
             with self.subTest(test_case=test_case):
-                sea_level_data_path = f'../data/tests_data/tests_data_sealevel/{test_case}_sea_level_test_data.csv'
-                reference_anomalies_path = f'../data/tests_data/tests_data_sealevel/{test_case}_reference_anomalies.csv'
+                sea_level_data_path = (
+                    f'../data/tests_data/tests_data_sealevel/'
+                    f'{test_case}_sea_level_test_data.csv'
+                )
+                reference_anomalies_path = (
+                    f'../data/tests_data/tests_data_sealevel/'
+                    f'{test_case}_reference_anomalies.csv'
+                )
 
                 # Lire les données de niveau de la mer
-                sea_level_data = pd.read_csv(sea_level_data_path, index_col='Corrected_Date', parse_dates=True)
+                sea_level_data = pd.read_csv(
+                    sea_level_data_path,
+                    index_col='Corrected_Date',
+                    parse_dates=True)
 
                 # Configurer le composant SeaLevel
                 sea_level_component = SeaLevelComponent(
@@ -131,7 +169,10 @@ class TestSeaLevelComponent(unittest.TestCase):
                 calculated_anomalies = sea_level_component.process()
 
                 # Lire les anomalies de référence
-                reference_anomalies = pd.read_csv(reference_anomalies_path, index_col='Corrected_Date', parse_dates=True)
+                reference_anomalies = pd.read_csv(
+                    reference_anomalies_path,
+                    index_col='Corrected_Date',
+                    parse_dates=True)
 
                 combined_df = pd.DataFrame({
                     'calculated_mean': calculated_anomalies.mean(axis=1),

@@ -6,8 +6,12 @@ import os
 import sys
 import warnings
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from components.temperature import TemperatureComponent
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__), '../aci/components')))
+from temperature import TemperatureComponent
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -27,11 +31,17 @@ class TestTemperature(unittest.TestCase):
         latitudes = np.arange(48.0, 48.5, 0.1)
         longitudes = np.arange(1.0, 1.5, 0.1)
         np.random.seed(0)
-        temperature_data = np.random.rand(len(times), len(latitudes), len(longitudes))
+        temperature_data = np.random.rand(
+            len(times),
+            len(latitudes),
+            len(longitudes))
 
         data = xr.Dataset(
             {'t2m': (['time', 'latitude', 'longitude'], temperature_data)},
-            coords={'time': times, 'latitude': latitudes, 'longitude': longitudes}
+            coords={
+                'time': times,
+                'latitude': latitudes,
+                'longitude': longitudes}
         )
         data.to_netcdf(self.data_path)
 
@@ -48,8 +58,12 @@ class TestTemperature(unittest.TestCase):
         data_dir = '../data/tests_data/tests_data_temperature'
         self.t2m_path = os.path.join(data_dir, 'test1_t2m.nc')
         self.mask_path_bis = os.path.join(data_dir, 'test1_mask.nc')
-        self.reference_anomalies_t90_path = os.path.join(data_dir, 'test1_reference_anomalies_t90.nc')
-        self.reference_anomalies_t10_path = os.path.join(data_dir, 'test1_reference_anomalies_t10.nc')
+        self.reference_anomalies_t90_path = os.path.join(
+            data_dir,
+            'test1_reference_anomalies_t90.nc')
+        self.reference_anomalies_t10_path = os.path.join(
+            data_dir,
+            'test1_reference_anomalies_t10.nc')
 
     def tearDown(self):
         """
@@ -62,7 +76,9 @@ class TestTemperature(unittest.TestCase):
         """
         Test the std_t90 method.
         """
-        temperature = TemperatureComponent(self.data_path, self.mask_path)
+        temperature = TemperatureComponent(
+            self.data_path,
+            self.mask_path)
         anomalies = temperature.std_t90(self.reference_period)
 
         # Verify that anomalies is a Dataset
@@ -74,8 +90,12 @@ class TestTemperature(unittest.TestCase):
         self.assertIn('longitude', anomalies.dims)
 
         # Check that the result contains the correct time period
-        self.assertGreaterEqual(anomalies['time'].min(), np.datetime64('2000-01-01'))
-        self.assertLessEqual(anomalies['time'].max(), np.datetime64('2005-12-31'))
+        self.assertGreaterEqual(
+            anomalies['time'].min(),
+            np.datetime64('2000-01-01'))
+        self.assertLessEqual(
+            anomalies['time'].max(),
+            np.datetime64('2005-12-31'))
 
     def test_no_temperature_variation(self):
         """
@@ -86,18 +106,26 @@ class TestTemperature(unittest.TestCase):
         longitudes = np.arange(1.0, 1.5, 0.1)
 
         # All zeros for no temperature variation
-        temperature_data = np.zeros((len(times), len(latitudes), len(longitudes)))
+        temperature_data = np.zeros(
+            (len(times), len(latitudes), len(longitudes)))
 
         data = xr.Dataset(
             {'t2m': (['time', 'latitude', 'longitude'], temperature_data)},
-            coords={'time': times, 'latitude': latitudes, 'longitude': longitudes}
+            coords={
+                'time': times,
+                'latitude': latitudes,
+                'longitude': longitudes}
         )
         data.to_netcdf('test_no_temperature_variation.nc')
 
-        temperature = TemperatureComponent('test_no_temperature_variation.nc', self.mask_path)
+        temperature = TemperatureComponent(
+            'test_no_temperature_variation.nc',
+            self.mask_path)
         anomalies = temperature.std_t90(self.reference_period)
 
-        self.assertTrue(np.all(np.isnan(anomalies['t2m'])), "Anomalies should be NaN when there is no temperature variation.")
+        self.assertTrue(
+            np.all(np.isnan(anomalies['t2m'])),
+            "Anomalies should be NaN when there is no temperature variation.")
         os.remove('test_no_temperature_variation.nc')
 
     def test_constant_temperature(self):
@@ -109,18 +137,27 @@ class TestTemperature(unittest.TestCase):
         longitudes = np.arange(1.0, 1.5, 0.1)
 
         # Constant temperature value
-        temperature_data = np.full((len(times), len(latitudes), len(longitudes)), 10)
+        temperature_data = np.full(
+            (len(times), len(latitudes), len(longitudes)),
+            10)
 
         data = xr.Dataset(
             {'t2m': (['time', 'latitude', 'longitude'], temperature_data)},
-            coords={'time': times, 'latitude': latitudes, 'longitude': longitudes}
+            coords={
+                'time': times,
+                'latitude': latitudes,
+                'longitude': longitudes}
         )
         data.to_netcdf('test_constant_temperature.nc')
 
-        temperature = TemperatureComponent('test_constant_temperature.nc', self.mask_path)
+        temperature = TemperatureComponent(
+            'test_constant_temperature.nc',
+            self.mask_path)
         anomalies = temperature.std_t90(self.reference_period)
 
-        self.assertTrue(np.all(np.isnan(anomalies['t2m'])), "Anomalies should be NaN when temperature is constant.")
+        self.assertTrue(
+            np.all(np.isnan(anomalies['t2m'])),
+            "Anomalies should be NaN when temperature is constant.")
         os.remove('test_constant_temperature.nc')
 
     def test_random_temperature_variation(self):
@@ -133,37 +170,67 @@ class TestTemperature(unittest.TestCase):
 
         # Random temperature variation
         np.random.seed(0)
-        temperature_data = np.random.rand(len(times), len(latitudes), len(longitudes))
+        temperature_data = np.random.rand(
+            len(times),
+            len(latitudes),
+            len(longitudes))
 
         data = xr.Dataset(
             {'t2m': (['time', 'latitude', 'longitude'], temperature_data)},
-            coords={'time': times, 'latitude': latitudes, 'longitude': longitudes}
+            coords={
+                'time': times,
+                'latitude': latitudes,
+                'longitude': longitudes}
         )
         data.to_netcdf('test_random_temperature_variation.nc')
 
-        temperature = TemperatureComponent('test_random_temperature_variation.nc', self.mask_path)
+        temperature = TemperatureComponent(
+            'test_random_temperature_variation.nc',
+            self.mask_path)
         anomalies = temperature.std_t90(self.reference_period)
 
         self.assertIsInstance(anomalies, xr.Dataset)
         os.remove('test_random_temperature_variation.nc')
 
     def test_temperature_component(self):
-        temp_component = TemperatureComponent(self.t2m_path, self.mask_path_bis)
-        calculated_anomalies_t90 = temp_component.std_t90(('1960-01-01', '1961-12-31'), area=True)
-        calculated_anomalies_t10 = temp_component.std_t10(('1960-01-01', '1961-12-31'), area=True)
+        temp_component = TemperatureComponent(
+            self.t2m_path,
+            self.mask_path_bis)
+        calculated_anomalies_t90 = temp_component.std_t90(
+            ('1960-01-01', '1961-12-31'),
+            area=True)
+        calculated_anomalies_t10 = temp_component.std_t10(
+            ('1960-01-01', '1961-12-31'),
+            area=True)
 
-        reference_anomalies_t90 = xr.open_dataarray(self.reference_anomalies_t90_path)
-        reference_anomalies_t10 = xr.open_dataarray(self.reference_anomalies_t10_path)
+        reference_anomalies_t90 = xr.open_dataarray(
+            self.reference_anomalies_t90_path)
+        reference_anomalies_t10 = xr.open_dataarray(
+            self.reference_anomalies_t10_path)
 
         # Extraire les DataArray des Dataset
-        calculated_anomalies_t90 = calculated_anomalies_t90['t2m'].values.astype(np.float64)
-        calculated_anomalies_t10 = calculated_anomalies_t10['t2m'].values.astype(np.float64)
-        reference_anomalies_t90 = reference_anomalies_t90.values.astype(np.float64)
-        reference_anomalies_t10 = reference_anomalies_t10.values.astype(np.float64)
+        t90_values = calculated_anomalies_t90['t2m'].values
+        calculated_anomalies_t90 = t90_values.astype(np.float64)
+        t10_values = calculated_anomalies_t10['t2m'].values
+        calculated_anomalies_t10 = t10_values.astype(np.float64)
 
-        # Vérifier que les anomalies calculées correspondent aux anomalies de référence
-        np.testing.assert_allclose(calculated_anomalies_t90, reference_anomalies_t90, rtol=1e-5, atol=1e-8)
-        np.testing.assert_allclose(calculated_anomalies_t10, reference_anomalies_t10, rtol=1e-5, atol=1e-8)
+        reference_anomalies_t90 = reference_anomalies_t90.values.astype(
+            np.float64)
+        reference_anomalies_t10 = reference_anomalies_t10.values.astype(
+            np.float64)
+
+        # Vérifier que les anomalies calculées correspondent aux anomalies
+        # de référence
+        np.testing.assert_allclose(
+            calculated_anomalies_t90,
+            reference_anomalies_t90,
+            rtol=1e-5,
+            atol=1e-8)
+        np.testing.assert_allclose(
+            calculated_anomalies_t10,
+            reference_anomalies_t10,
+            rtol=1e-5,
+            atol=1e-8)
 
 
 if __name__ == '__main__':

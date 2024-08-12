@@ -2,10 +2,9 @@ import os
 import pandas as pd
 import numpy as np
 import request_sealevel_data as gd
-from components.component import Component
 
 
-class SeaLevelComponent(Component):
+class SeaLevelComponent:
     """
     A class used to represent the Sea Level Component.
 
@@ -17,29 +16,6 @@ class SeaLevelComponent(Component):
         Tuple of start and end dates for the study period.
     reference_period : tuple
         Tuple of start and end dates for the reference period.
-
-    Methods
-    -------
-    load_data():
-        Loads sea level data from files in the directory.
-    correct_date_format(data):
-        Corrects the date format from a specific float representation to YYYY-MM-DD.
-    clean_data(data):
-        Cleans the data by replacing sentinel values with NaN.
-    compute_monthly_stats(data, reference_period, stats):
-        Computes monthly statistics (mean or std deviation) for the reference period.
-    standardize_data(data, monthly_means, monthly_std_devs, study_period):
-        Standardizes the data using the reference period statistics.
-    process():
-        Full processing of the sea level data: loading, correcting dates, cleaning, and standardizing.
-    plot_rolling_mean(data, window=60):
-        Plots the rolling mean of the data.
-    convert_to_xarray(data):
-        Converts the data to an xarray.
-    resample_data(data):
-        Resamples the data to a specified frequency.
-    save_to_netcdf(data, filename):
-        Saves the data to a NetCDF file.
     """
 
     def __init__(self, country_abrev, study_period, reference_period):
@@ -55,10 +31,20 @@ class SeaLevelComponent(Component):
         reference_period : tuple
             Tuple containing the start and end date of the reference period (YYYY-MM-DD).
         """
-        gd.copy_and_rename_files_by_country(country_abrev)
+        # Load the DataFrame
+        df = gd.load_dataframe()
+
+        # Copy and rename files based on country abbreviation
+        gd.copy_and_rename_files_by_country(country_abrev, df)
+
         self.directory = f"../data/sealevel_data_{country_abrev}"
         self.study_period = study_period
         self.reference_period = reference_period
+
+        # Initialize without calling Component's init
+        # No need to initialize with Component if we are not using its methods directly.
+        # We are avoiding the unnecessary call to super() here.
+        # super().__init__(None, None, self.directory)
 
     def load_data(self):
         """
@@ -71,18 +57,17 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N * M)
-        where N is the number of files and M is the number of rows per file.
+        O(N * M) where N is the number of files and M is the number of rows per file.
         """
         dataframes = []
         for filename in os.listdir(self.directory):
-            if filename.endswith('.txt'):
+            if filename.endswith(".txt"):
                 file_path = os.path.join(self.directory, filename)
                 temp_data = pd.read_csv(
                     file_path,
                     sep=";",
                     names=["Date", f"Measurement_{filename[:-4]}", "2", "3"],
-                    skipinitialspace=True
+                    skipinitialspace=True,
                 )
                 temp_data = temp_data[["Date", f"Measurement_{filename[:-4]}"]]
                 temp_data["Date"] = temp_data["Date"].astype(float)
@@ -108,20 +93,28 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
+        O(N) where N is the number of rows in the DataFrame.
         """
         month_mapping = {
-            "0417": "01", "125": "02", "2083": "03", "2917": "04", "375": "05",
-            "4583": "06", "5417": "07", "625": "08", "7083": "09", "7917": "10",
-            "875": "11", "9583": "12"
+            "0417": "01",
+            "125": "02",
+            "2083": "03",
+            "2917": "04",
+            "375": "05",
+            "4583": "06",
+            "5417": "07",
+            "625": "08",
+            "7083": "09",
+            "7917": "10",
+            "875": "11",
+            "9583": "12",
         }
 
         def convert_date(date):
             date_str = str(date)
             try:
                 year = int(float(date_str))
-                month_fraction = date_str.split('.')[1][:4]
+                month_fraction = date_str.split(".")[1][:4]
                 month = month_mapping.get(month_fraction, None)
                 if month:
                     return pd.Timestamp(f"{year}-{month}-01")
@@ -131,8 +124,8 @@ class SeaLevelComponent(Component):
 
         corrected_dates = data.index.to_series().apply(convert_date)
         data = data.assign(Corrected_Date=corrected_dates)
-        data = data.dropna(subset=['Corrected_Date'])
-        data = data.set_index('Corrected_Date')
+        data = data.dropna(subset=["Corrected_Date"])
+        data = data.set_index("Corrected_Date")
         data.sort_index(inplace=True)
         return data
 
@@ -152,8 +145,7 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
+        O(N) where N is the number of rows in the DataFrame.
         """
         return data.replace(-99999.0, np.nan)
 
@@ -177,10 +169,11 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N)
-        where N is the number of rows in the reference period DataFrame.
+        O(N) where N is the number of rows in the reference period DataFrame.
         """
-        reference_period_mask = (data.index >= reference_period[0]) & (data.index < reference_period[1])
+        reference_period_mask = (data.index >= reference_period[0]) & (
+            data.index < reference_period[1]
+        )
         data_ref = data.loc[reference_period_mask]
         mean_ref = data_ref.mean(axis=1)
 
@@ -216,10 +209,11 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N)
-        where N is the number of rows in the study period DataFrame.
+        O(N) where N is the number of rows in the study period DataFrame.
         """
-        study_period_mask = (data.index >= study_period[0]) & (data.index < study_period[1])
+        study_period_mask = (data.index >= study_period[0]) & (
+            data.index < study_period[1]
+        )
         data_study = data.loc[study_period_mask]
 
         def calculate_z_score(row, monthly_means, monthly_std_devs):
@@ -228,8 +222,10 @@ class SeaLevelComponent(Component):
                 return (row - monthly_means[month]) / monthly_std_devs[month]
             return np.nan
 
-        standardized_df = data_study.apply(calculate_z_score, args=(monthly_means, monthly_std_devs), axis=1)
-        return standardized_df.dropna(how='all')
+        standardized_df = data_study.apply(
+            calculate_z_score, args=(monthly_means, monthly_std_devs), axis=1
+        )
+        return standardized_df.dropna(how="all")
 
     def process(self):
         """
@@ -242,15 +238,20 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N * M)
-        where N is the number of rows and M is the number of columns in the final standardized DataFrame.
+        O(N * M) where N is the number of rows and M is the number of columns in the final standardized DataFrame.
         """
         sea_level_data = self.load_data()
         sea_level_data = self.correct_date_format(sea_level_data)
         sea_level_data = self.clean_data(sea_level_data)
-        monthly_means = self.compute_monthly_stats(sea_level_data, self.reference_period, "means")
-        monthly_std_devs = self.compute_monthly_stats(sea_level_data, self.reference_period, "std")
-        standardized_data = self.standardize_data(sea_level_data, monthly_means, monthly_std_devs, self.study_period)
+        monthly_means = self.compute_monthly_stats(
+            sea_level_data, self.reference_period, "means"
+        )
+        monthly_std_devs = self.compute_monthly_stats(
+            sea_level_data, self.reference_period, "std"
+        )
+        standardized_data = self.standardize_data(
+            sea_level_data, monthly_means, monthly_std_devs, self.study_period
+        )
         return standardized_data
 
     def plot_rolling_mean(self, data, window=60):
@@ -266,8 +267,7 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
+        O(N) where N is the number of rows in the DataFrame.
         """
         data.rolling(window, min_periods=30, center=True).mean().plot()
 
@@ -287,8 +287,7 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
+        O(N) where N is the number of rows in the DataFrame.
         """
         return data.to_xarray()
 
@@ -308,10 +307,9 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
+        O(N) where N is the number of rows in the DataFrame.
         """
-        return data.resample('3M').mean()
+        return data.resample("3M").mean()
 
     def save_to_netcdf(self, data, filename):
         """
@@ -326,7 +324,6 @@ class SeaLevelComponent(Component):
 
         Complexity
         ----------
-        O(N)
-        where N is the number of rows in the DataArray.
+        O(N) where N is the number of rows in the DataArray.
         """
         data.to_netcdf(filename)

@@ -1,0 +1,12 @@
+name : aci_env
+channels: 
+   - conda-forge
+   - defaults
+dependencies: 
+   - xarray
+   - bottleneck
+   - requests
+   - netCDF4
+   - dask
+   - psutil
+   - pandas

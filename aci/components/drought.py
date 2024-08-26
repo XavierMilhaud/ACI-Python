@@ -1,8 +1,13 @@
 import xarray as xr
+import os
+from components.component import Component
 import numpy as np
 import pandas as pd
-from components.component import Component
+import warnings
 
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 class DroughtComponent(Component):
     """
@@ -13,31 +18,42 @@ class DroughtComponent(Component):
     ----------
     precipitation : xarray.Dataset
         Dataset containing precipitation data.
-    mask : xarray.Dataset
-        Dataset containing mask data.
+    mask : xarray.Dataset or None
+        Dataset containing mask data, if provided.
     """
 
-    def __init__(self, precipitation_path, mask_path):
+    def __init__(self, precipitation_source, mask_path=None):
         """
         Initialize the DroughtComponent object.
 
         Parameters
         ----------
-        precipitation_path : str
-            Path to the dataset containing precipitation data.
-        mask_path : str
-            Path to the dataset containing mask data.
+        precipitation_source : str
+            Path to a directory containing NetCDF files or a single NetCDF file.
+        mask_path : str, optional
+            Path to the dataset containing mask data. Default is None.
 
         Complexity
         ----------
         O(P) for loading and initializing precipitation and mask data,
         where P is the size of the precipitation dataset.
         """
-        precipitation = xr.open_dataset(precipitation_path)
-        mask = xr.open_dataset(mask_path).rename(
-            {'lon': 'longitude', 'lat': 'latitude'}
-        )
-        super().__init__(precipitation, mask, precipitation_path)
+        # Determine if the source is a directory or a single file
+        if os.path.isdir(precipitation_source):
+            # Load multiple NetCDF files using open_mfdataset
+            precipitation = xr.open_mfdataset(
+                os.path.join(precipitation_source, "*.nc"), combine='by_coords'
+            )
+        else:
+            # Load a single NetCDF file
+            precipitation = xr.open_dataset(precipitation_source)
+
+        # Load mask data if provided
+        mask = None
+        if mask_path:
+            mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
+
+        super().__init__(precipitation, mask, precipitation_source)
 
     def max_consecutive_dry_days(self):
         """
@@ -53,21 +69,18 @@ class DroughtComponent(Component):
         O(N) for calculating cumulative sums and transformations,
         where N is the number of time steps in the dataset.
         """
-        preci = self.apply_mask("tp")
+        preci = self.apply_mask("tp") if self.mask is not None else self.array
         precipitation_per_day = preci['tp'].resample(time='d').sum()
-        days_below_thresholds = xr.where(
-            precipitation_per_day < 0.001, 1, 0
-        )
+        
+        # Rechunk data after resampling for optimal performance
+        precipitation_per_day = precipitation_per_day.chunk({'time': -1})        
+        days_below_thresholds = xr.where(precipitation_per_day < 0.001, 1, 0)
         days_above_thresholds = xr.where(days_below_thresholds == 0, 1, 0)
-
         cumsum_above = days_above_thresholds.cumsum(dim='time')
-        days = cumsum_above - cumsum_above.where(
-            days_above_thresholds == 0
-        ).ffill(dim='time').fillna(0)
-
+        days = cumsum_above - cumsum_above.where(days_above_thresholds == 0).ffill(dim='time').fillna(0)
         result = days.resample(time='Y').max()
 
-        if not self.should_use_dask:
+        if not self.use_dask:
             result = result.compute()
 
         return result
@@ -119,7 +132,7 @@ class DroughtComponent(Component):
 
         monthly_values = xr.concat(monthly_values, dim="time")
 
-        if not self.should_use_dask:
+        if not self.use_dask:
             monthly_values = monthly_values.compute()
 
         return monthly_values
@@ -149,14 +162,13 @@ class DroughtComponent(Component):
         size of the reference period.
         """
         max_days_drought_per_year = self.max_consecutive_dry_days()
+        max_days_drought_per_year = max_days_drought_per_year.chunk({'time': -1})
         monthly_values = self.drought_interpolate(max_days_drought_per_year)
-
         # Standardize the interpolated monthly values
-        standardized_values = self.standardize_metric(
-            monthly_values, reference_period, area
-        )
+        standardized_values = self.standardize_metric(monthly_values, reference_period, area)
 
-        if not self.should_use_dask:
+        if not self.use_dask:
             standardized_values = standardized_values.compute()
 
         return standardized_values
+    

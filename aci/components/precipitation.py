@@ -1,5 +1,6 @@
 import xarray as xr
-from component import Component
+import os
+from components.component import Component
 
 
 class PrecipitationComponent(Component):
@@ -10,31 +11,42 @@ class PrecipitationComponent(Component):
     ----------
     precipitation : xarray.Dataset
         Dataset containing precipitation data.
-    mask : xarray.Dataset
-        Dataset containing mask data.
+    mask : xarray.Dataset or None
+        Dataset containing mask data, if provided.
     """
 
-    def __init__(self, precipitation_path, mask_path):
+    def __init__(self, precipitation_source, mask_path=None):
         """
         Initialize the PrecipitationComponent object.
 
         Parameters:
         ----------
-        precipitation_path : str
-            Path to the dataset containing precipitation data.
-        mask_path : str
-            Path to the dataset containing mask data.
+        precipitation_source : str
+            Path to a directory containing NetCDF files or a single NetCDF file.
+        mask_path : str, optional
+            Path to the dataset containing mask data. Default is None.
 
         Complexity:
         ----------
         O(P) for loading and initializing precipitation and mask data,
         where P is the size of the precipitation dataset.
         """
-        precipitation = xr.open_dataset(precipitation_path)
-        mask = xr.open_dataset(mask_path).rename(
-            {'lon': 'longitude', 'lat': 'latitude'}
-        )
-        super().__init__(precipitation, mask, precipitation_path)
+        # Determine if the source is a directory or a single file
+        if os.path.isdir(precipitation_source):
+            # Load multiple NetCDF files using open_mfdataset
+            precipitation = xr.open_mfdataset(
+                os.path.join(precipitation_source, "*.nc"), combine='by_coords'
+            )
+        else:
+            # Load a single NetCDF file
+            precipitation = xr.open_dataset(precipitation_source)
+
+        # Load mask data if provided
+        mask = None
+        if mask_path:
+            mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
+
+        super().__init__(precipitation, mask, precipitation_source)
 
     def monthly_max(self, var_name, window_size):
         """

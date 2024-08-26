@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-from component import Component
+from components.component import Component
 
 
 class TemperatureComponent(Component):
@@ -115,14 +115,33 @@ class TemperatureComponent(Component):
         else:
             raise ValueError("tempo must be 'day' or 'night'")
 
-        percentile_reference = (
-            temperature_reference["t2m"]
-            .rolling(time=rolling_window_size, min_periods=1, center=True)
-            .reduce(np.percentile, q=n)
+        temperature_reference = temperature_reference.chunk({'time': -1})
+        def compute_percentile(arr, q):
+            return np.percentile(arr, q, axis=-1)
+
+        rolling = temperature_reference["t2m"].rolling(time=rolling_window_size, min_periods=1, center=True)
+        rolling_constructed = rolling.construct('window_dim')
+        rolling_constructed = rolling_constructed.chunk({'time': -1})
+
+        percentile_reference = xr.apply_ufunc(
+            compute_percentile,
+            rolling_constructed,
+            input_core_dims=[['window_dim']],
+            kwargs={'q': n},
+            dask='parallelized',
+            output_dtypes=[float]
         )
-        percentile_calendar = percentile_reference.groupby("time.dayofyear").reduce(
-            np.percentile, q=n
+
+        percentile_calendar = xr.apply_ufunc(
+            compute_percentile,
+            percentile_reference.groupby("time.dayofyear"),
+            input_core_dims=[['time']],
+            kwargs={'q': n},
+            vectorize=True,
+            dask='parallelized',
+            output_dtypes=[float]
         )
+
         return percentile_calendar
 
     def t90(self, reference_period):

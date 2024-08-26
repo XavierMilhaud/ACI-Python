@@ -4,7 +4,6 @@ import psutil
 import socket
 from dask.distributed import Client, LocalCluster
 
-
 class Component:
     """
     Base class for components that handle various climate data
@@ -12,20 +11,20 @@ class Component:
 
     Attributes:
     - array (xarray.Dataset): The dataset containing the primary data.
-    - mask (xarray.Dataset): The dataset containing the mask data.
+    - mask (xarray.Dataset or None): The dataset containing the mask data, or None if no mask is used.
     - file_name (str): The file name of the dataset.
     - dask_client (dask.distributed.Client or None): Dask client for
     distributed computing.
     - use_dask (bool): Whether to use Dask for parallel computing.
     """
 
-    def __init__(self, array, mask, file_name):
+    def __init__(self, array, mask=None, file_name=None):
         """
         Initializes the Component with primary data and mask data.
 
         Args:
             array (xarray.Dataset): The dataset containing the primary data.
-            mask (xarray.Dataset): The dataset containing the mask data.
+            mask (xarray.Dataset or None): The dataset containing the mask data, or None if no mask is used.
             file_name (str): The file name of the dataset.
         """
         warnings.filterwarnings(
@@ -38,9 +37,9 @@ class Component:
         )
 
         self.use_dask = self.should_use_dask()
-        self.chunk_size = self.determine_chunk_size(mask)
+        self.chunk_size = self.determine_chunk_size(array)
         self.array = array.chunk(self.chunk_size) if self.use_dask else array
-        self.mask = mask.chunk(self.chunk_size) if self.use_dask else mask
+        self.mask = mask.chunk(self.chunk_size) if mask is not None and self.use_dask else mask
         self.file_name = file_name
 
         # Initialize Dask client if applicable
@@ -116,7 +115,7 @@ class Component:
 
     def apply_mask(self, var_name, threshold=0.8):
         """
-        Apply a mask to the dataset.
+        Apply a mask to the dataset, if a mask is provided.
 
         Args:
             var_name (str): Variable name in the dataset to which the mask
@@ -125,11 +124,11 @@ class Component:
 
         Returns:
             xarray.Dataset: Dataset with the mask applied to the specified
-            variable.
+            variable if mask is provided; otherwise, the original dataset.
         """
-        if self.array is None or self.mask is None:
-            raise ValueError(
-                "Data not loaded. Please ensure the data and mask are loaded.")
+        if self.mask is None:
+            # If no mask is provided, return the original dataset
+            return self.array
 
         f_temp = self.array.copy()
         f_temp['mask'] = self.mask.country

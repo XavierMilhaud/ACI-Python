@@ -11,20 +11,20 @@ class Component:
 
     Attributes:
     - array (xarray.Dataset): The dataset containing the primary data.
-    - mask (xarray.Dataset or None): The dataset containing the mask data, or None if no mask is used.
+    - mask (xarray.Dataset): The dataset containing the mask data.
     - file_name (str): The file name of the dataset.
     - dask_client (dask.distributed.Client or None): Dask client for
     distributed computing.
     - use_dask (bool): Whether to use Dask for parallel computing.
     """
 
-    def __init__(self, array, mask=None, file_name=None):
+    def __init__(self, array, mask, file_name):
         """
         Initializes the Component with primary data and mask data.
 
         Args:
             array (xarray.Dataset): The dataset containing the primary data.
-            mask (xarray.Dataset or None): The dataset containing the mask data, or None if no mask is used.
+            mask (xarray.Dataset or None): The dataset containing the mask data, if provided.
             file_name (str): The file name of the dataset.
         """
         warnings.filterwarnings(
@@ -38,8 +38,17 @@ class Component:
 
         self.use_dask = self.should_use_dask()
         self.chunk_size = self.determine_chunk_size(array)
+
+        # Conditional chunking based on Dask usage and dataset dimensions
         self.array = array.chunk(self.chunk_size) if self.use_dask else array
-        self.mask = mask.chunk(self.chunk_size) if mask is not None and self.use_dask else mask
+
+        # Check if mask is provided and apply chunking conditionally
+        if mask is not None:
+            mask_chunk_size = {dim: self.chunk_size.get(dim, -1) for dim in mask.dims}
+            self.mask = mask.chunk(mask_chunk_size) if self.use_dask else mask
+        else:
+            self.mask = mask
+
         self.file_name = file_name
 
         # Initialize Dask client if applicable

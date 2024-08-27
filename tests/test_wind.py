@@ -218,18 +218,21 @@ class TestWindComponent(unittest.TestCase):
             standardized_frequency['time'].max(),
             np.datetime64('2020-12-31'))
 
-        # Ensure that the mean standardized frequency over the reference period
-        #  is approximately zero
+        # Ensure that the mean standardized frequency over the reference period is approximately zero
         dt = slice(self.reference_period[0], self.reference_period[1])
         ref_standardized_frequency = standardized_frequency.sel(time=dt)
+
+        # Compute if using Dask to avoid NotImplementedError
+        if wind.use_dask:
+            ref_standardized_frequency = ref_standardized_frequency.compute()
+
         mean_standardized_frequency = ref_standardized_frequency.mean().item()
         self.assertFalse(
             np.isnan(mean_standardized_frequency),
             "Mean standardized frequency should not be NaN.")
         self.assertAlmostEqual(mean_standardized_frequency, 0, places=1)
 
-        # Ensure that the standard deviation of the standardized frequency
-        # over the reference period is approximately one
+        # Ensure that the standard deviation of the standardized frequency over the reference period is approximately one
         std_standardized_frequency = ref_standardized_frequency.std().item()
         self.assertFalse(
             np.isnan(std_standardized_frequency),

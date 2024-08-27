@@ -77,6 +77,11 @@ class TestDrought(unittest.TestCase):
 
         # Ensure that the mean anomaly over the reference period is approximately zero
         ref_anomalies = anomalies.sel(time=slice(self.reference_period[0], self.reference_period[1]))
+
+        # Compute if using Dask to avoid NotImplementedError
+        if drought.use_dask:
+            ref_anomalies = ref_anomalies.compute()
+
         mean_anomaly = ref_anomalies.mean().item()
         self.assertFalse(np.isnan(mean_anomaly), "Mean anomaly should not be NaN.")
         self.assertAlmostEqual(mean_anomaly, 0, places=1)
@@ -85,6 +90,7 @@ class TestDrought(unittest.TestCase):
         std_anomaly = ref_anomalies.std().item()
         self.assertFalse(np.isnan(std_anomaly), "Std anomaly should not be NaN.")
         self.assertAlmostEqual(std_anomaly, 1, places=1)
+
 
     def test_no_precipitation(self):
         """
@@ -170,7 +176,7 @@ class TestDrought(unittest.TestCase):
                 pd.testing.assert_series_equal(
                     combined_df['calculated_mean'],
                     combined_df['reference_mean'],
-                    check_less_precise=True,
+                    check_exact=False,
                     check_names=False
                 )
 

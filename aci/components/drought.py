@@ -1,6 +1,6 @@
 import xarray as xr
 import os
-from components.component import Component
+from component import Component
 import numpy as np
 import pandas as pd
 import warnings
@@ -73,7 +73,8 @@ class DroughtComponent(Component):
         precipitation_per_day = preci['tp'].resample(time='d').sum()
         
         # Rechunk data after resampling for optimal performance
-        precipitation_per_day = precipitation_per_day.chunk({'time': -1})        
+        if self.should_use_dask:
+            precipitation_per_day = precipitation_per_day.chunk({'time': -1})        
         days_below_thresholds = xr.where(precipitation_per_day < 0.001, 1, 0)
         days_above_thresholds = xr.where(days_below_thresholds == 0, 1, 0)
         cumsum_above = days_above_thresholds.cumsum(dim='time')
@@ -162,7 +163,10 @@ class DroughtComponent(Component):
         size of the reference period.
         """
         max_days_drought_per_year = self.max_consecutive_dry_days()
-        max_days_drought_per_year = max_days_drought_per_year.chunk({'time': -1})
+
+        if self.should_use_dask:
+            max_days_drought_per_year = max_days_drought_per_year.chunk({'time': -1})
+        
         monthly_values = self.drought_interpolate(max_days_drought_per_year)
         # Standardize the interpolated monthly values
         standardized_values = self.standardize_metric(monthly_values, reference_period, area)

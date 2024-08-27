@@ -1,6 +1,7 @@
 import xarray as xr
 import numpy as np
-from components.component import Component
+import os
+from component import Component
 
 
 class WindComponent(Component):
@@ -13,34 +14,48 @@ class WindComponent(Component):
         Dataset containing wind u-component data.
     v10 : xarray.Dataset
         Dataset containing wind v-component data.
-    mask : xarray.Dataset
-        Dataset containing mask data.
+    mask : xarray.Dataset or None
+        Dataset containing mask data, if provided.
     """
 
-    def __init__(self, u10_path, v10_path, mask_path):
+    def __init__(self, u10_source, v10_source, mask_path=None):
         """
         Initialize the WindComponent object.
 
         Parameters:
         ----------
-        u10_path : str
-            Path to the dataset containing wind u-component data.
-        v10_path : str
-            Path to the dataset containing wind v-component data.
-        mask_path : str
-            Path to the dataset containing mask data.
+        u10_source : str
+            Path to a directory containing NetCDF files or a single NetCDF file for u-component data.
+        v10_source : str
+            Path to a directory containing NetCDF files or a single NetCDF file for v-component data.
+        mask_path : str, optional
+            Path to the dataset containing mask data. Default is None.
 
         Complexity:
         ----------
-        O(W) for loading and initializing wind data and mask data, where W is
-        the size of the wind dataset.
+        O(W) for loading and initializing wind data and mask data, where W is the size of the wind dataset.
         """
-        u10 = xr.open_dataset(u10_path)
-        v10 = xr.open_dataset(v10_path)
-        mask = xr.open_dataset(mask_path).rename(
-            {'lon': 'longitude', 'lat': 'latitude'}
-        )
-        super().__init__(u10, mask, u10_path)
+        # Determine if the source is a directory or a single file for u10 and v10
+        if os.path.isdir(u10_source):
+            u10 = xr.open_mfdataset(
+                os.path.join(u10_source, "*.nc"), combine='by_coords'
+            )
+        else:
+            u10 = xr.open_dataset(u10_source)
+
+        if os.path.isdir(v10_source):
+            v10 = xr.open_mfdataset(
+                os.path.join(v10_source, "*.nc"), combine='by_coords'
+            )
+        else:
+            v10 = xr.open_dataset(v10_source)
+
+        # Load mask data if provided
+        mask = None
+        if mask_path:
+            mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
+
+        super().__init__(u10, mask, u10_source)
         self.v10 = v10
 
     def wind_power(self, reference_period=None):
@@ -51,7 +66,7 @@ class WindComponent(Component):
         ----------
         reference_period : tuple, optional
             If provided, the method computes daily wind power for the
-            specified reference period (e.g., ('1960-01-01', '1961-12-31')).
+            specified reference period (e.g., '1960-01-01' to '1961-12-31').
 
         Returns:
         -------

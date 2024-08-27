@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
-from components.component import Component
+import os
+from component import Component
 
 
 class TemperatureComponent(Component):
@@ -9,30 +10,41 @@ class TemperatureComponent(Component):
 
     Attributes:
         temperature_data (xarray.Dataset): Dataset containing temperature data.
-        mask_data (xarray.Dataset): Dataset containing mask data.
+        mask_data (xarray.Dataset or None): Dataset containing mask data, if provided.
     """
 
-    def __init__(self, temperature_data_path, mask_data_path):
+    def __init__(self, temperature_data_source, mask_data_path=None):
         """
         Initialize the TemperatureComponent object.
 
         Parameters:
         ----------
-        temperature_data_path : str
-            Path to the dataset containing temperature data.
-        mask_data_path : str
-            Path to the dataset containing mask data.
+        temperature_data_source : str
+            Path to a directory containing NetCDF files or a single NetCDF file for temperature data.
+        mask_data_path : str, optional
+            Path to the dataset containing mask data. Default is None.
 
         Complexity:
         ----------
         O(T) for loading and initializing temperature and mask data, where T
         is the size of the temperature dataset.
         """
-        temperature_data = xr.open_dataset(temperature_data_path)
-        mask_data = xr.open_dataset(mask_data_path).rename(
-            {"lon": "longitude", "lat": "latitude"})
+        # Determine if the source is a directory or a single file
+        if os.path.isdir(temperature_data_source):
+            # Load multiple NetCDF files using open_mfdataset
+            temperature_data = xr.open_mfdataset(
+                os.path.join(temperature_data_source, "*.nc"), combine='by_coords'
+            )
+        else:
+            # Load a single NetCDF file
+            temperature_data = xr.open_dataset(temperature_data_source)
 
-        super().__init__(temperature_data, mask_data, temperature_data_path)
+        # Load mask data if provided
+        mask_data = None
+        if mask_data_path:
+            mask_data = xr.open_dataset(mask_data_path).rename({'lon': 'longitude', 'lat': 'latitude'})
+
+        super().__init__(temperature_data, mask_data, temperature_data_source)
 
         temperature = self.apply_mask("t2m")
         self.temperature_days = temperature.isel(
@@ -80,8 +92,7 @@ class TemperatureComponent(Component):
 
     def percentiles(self, n, reference_period, tempo):
         """
-        Compute percentiles for day or night temperatures over a
-        reference period.
+        Compute percentiles for day or night temperatures over a reference period.
 
         Parameters:
         ----------
@@ -99,8 +110,7 @@ class TemperatureComponent(Component):
 
         Complexity:
         ----------
-        O(N), where N is the number of time steps in the reference
-        period.
+        O(N), where N is the number of time steps in the reference period.
         """
         if tempo == "day":
             rolling_window_size = 80
@@ -115,32 +125,48 @@ class TemperatureComponent(Component):
         else:
             raise ValueError("tempo must be 'day' or 'night'")
 
-        temperature_reference = temperature_reference.chunk({'time': -1})
-        def compute_percentile(arr, q):
-            return np.percentile(arr, q, axis=-1)
+        if self.should_use_dask:
+            # Use Dask for parallel computation
+            temperature_reference = temperature_reference.chunk({'time': -1})
 
-        rolling = temperature_reference["t2m"].rolling(time=rolling_window_size, min_periods=1, center=True)
-        rolling_constructed = rolling.construct('window_dim')
-        rolling_constructed = rolling_constructed.chunk({'time': -1})
+            def compute_percentile(arr, q):
+                return np.percentile(arr, q, axis=-1)
+            
+            rolling = temperature_reference["t2m"].rolling(time=rolling_window_size, min_periods=1, center=True)
+            rolling_constructed = rolling.construct('window_dim')
+            rolling_constructed = rolling_constructed.chunk({'time': -1})
 
-        percentile_reference = xr.apply_ufunc(
-            compute_percentile,
-            rolling_constructed,
-            input_core_dims=[['window_dim']],
-            kwargs={'q': n},
-            dask='parallelized',
-            output_dtypes=[float]
-        )
+            percentile_reference = xr.apply_ufunc(
+                compute_percentile,
+                rolling_constructed,
+                input_core_dims=[['window_dim']],
+                kwargs={'q': n},
+                dask='parallelized',
+                output_dtypes=[float]
+            )
 
-        percentile_calendar = xr.apply_ufunc(
-            compute_percentile,
-            percentile_reference.groupby("time.dayofyear"),
-            input_core_dims=[['time']],
-            kwargs={'q': n},
-            vectorize=True,
-            dask='parallelized',
-            output_dtypes=[float]
-        )
+            percentile_calendar = xr.apply_ufunc(
+                compute_percentile,
+                percentile_reference.groupby("time.dayofyear"),
+                input_core_dims=[['time']],
+                kwargs={'q': n},
+                vectorize=True,
+                dask='parallelized',
+                output_dtypes=[float]
+            )
+        else:
+            # Non-Dask computation
+            rolling = temperature_reference["t2m"].rolling(time=rolling_window_size, min_periods=1, center=True)
+            rolling_constructed = rolling.construct('window_dim')
+            percentile_reference = rolling_constructed.reduce(
+                lambda arr, axis: np.percentile(arr, n, axis=axis),
+                dim='window_dim'
+            )
+
+            percentile_calendar = percentile_reference.groupby("time.dayofyear").reduce(
+                lambda arr, axis: np.percentile(arr, n, axis=axis),
+                dim='time'
+            )
 
         return percentile_calendar
 

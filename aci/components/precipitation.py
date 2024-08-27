@@ -1,6 +1,6 @@
 import xarray as xr
 import os
-from components.component import Component
+from component import Component
 
 
 class PrecipitationComponent(Component):

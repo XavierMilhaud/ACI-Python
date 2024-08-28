@@ -9,8 +9,10 @@ class TemperatureComponent(Component):
     A class to handle temperature data and perform related calculations.
 
     Attributes:
-        temperature_data (xarray.Dataset): Dataset containing temperature data.
-        mask_data (xarray.Dataset or None): Dataset containing mask data, if provided.
+        temperature_data (xarray.Dataset): Dataset containing temperature
+        data.
+        mask_data (xarray.Dataset or None): Dataset containing mask data,
+        if provided.
     """
 
     def __init__(self, temperature_data_source, mask_data_path=None):
@@ -20,7 +22,8 @@ class TemperatureComponent(Component):
         Parameters:
         ----------
         temperature_data_source : str
-            Path to a directory containing NetCDF files or a single NetCDF file for temperature data.
+            Path to a directory containing NetCDF files or a single NetCDF
+            file for temperature data.
         mask_data_path : str, optional
             Path to the dataset containing mask data. Default is None.
 
@@ -33,7 +36,8 @@ class TemperatureComponent(Component):
         if os.path.isdir(temperature_data_source):
             # Load multiple NetCDF files using open_mfdataset
             temperature_data = xr.open_mfdataset(
-                os.path.join(temperature_data_source, "*.nc"), combine='by_coords'
+                os.path.join(
+                    temperature_data_source, "*.nc"), combine='by_coords'
             )
         else:
             # Load a single NetCDF file
@@ -42,7 +46,8 @@ class TemperatureComponent(Component):
         # Load mask data if provided
         mask_data = None
         if mask_data_path:
-            mask_data = xr.open_dataset(mask_data_path).rename({'lon': 'longitude', 'lat': 'latitude'})
+            mask_data = xr.open_dataset(
+                mask_data_path).rename({'lon': 'longitude', 'lat': 'latitude'})
 
         super().__init__(temperature_data, mask_data, temperature_data_source)
 
@@ -92,7 +97,8 @@ class TemperatureComponent(Component):
 
     def percentiles(self, n, reference_period, tempo):
         """
-        Compute percentiles for day or night temperatures over a reference period.
+        Compute percentiles for day or night temperatures over a reference
+        period.
 
         Parameters:
         ----------
@@ -127,14 +133,17 @@ class TemperatureComponent(Component):
 
         if self.should_use_dask:
             # Use Dask for parallel computation
-            temperature_reference = temperature_reference.chunk({'time': -1})
+            temperature_reference = temperature_reference.chunk(
+                {'time': -1})
 
             def compute_percentile(arr, q):
                 return np.percentile(arr, q, axis=-1)
-            
-            rolling = temperature_reference["t2m"].rolling(time=rolling_window_size, min_periods=1, center=True)
+
+            rolling = temperature_reference["t2m"].rolling(
+                time=rolling_window_size, min_periods=1, center=True)
             rolling_constructed = rolling.construct('window_dim')
-            rolling_constructed = rolling_constructed.chunk({'time': -1})
+            rolling_constructed = rolling_constructed.chunk(
+                {'time': -1})
 
             percentile_reference = xr.apply_ufunc(
                 compute_percentile,
@@ -156,7 +165,8 @@ class TemperatureComponent(Component):
             )
         else:
             # Non-Dask computation
-            rolling = temperature_reference["t2m"].rolling(time=rolling_window_size, min_periods=1, center=True)
+            rolling = temperature_reference["t2m"].rolling(
+                time=rolling_window_size, min_periods=1, center=True)
             rolling_constructed = rolling.construct('window_dim')
             percentile_reference = rolling_constructed.reduce(
                 lambda arr, axis: np.percentile(arr, n, axis=axis),
@@ -312,7 +322,8 @@ class TemperatureComponent(Component):
         O(N), where N is the number of time steps in the study period.
         """
         t90_values = self.t90(reference_period)
-        std_t90_values = self.standardize_metric(t90_values, reference_period, area)
+        std_t90_values = self.standardize_metric(
+            t90_values, reference_period, area)
 
         if not self.should_use_dask:
             std_t90_values = std_t90_values.compute()
@@ -328,7 +339,8 @@ class TemperatureComponent(Component):
         reference_period : tuple
             Start and end dates of the reference period.
         area : bool, optional
-            If True, compute the area-averaged standardized metric. Default is None.
+            If True, compute the area-averaged standardized metric.
+            Default is None.
 
         Returns:
         -------
@@ -340,7 +352,8 @@ class TemperatureComponent(Component):
         O(N), where N is the number of time steps in the study period.
         """
         t10_values = self.t10(reference_period)
-        std_t10_values = self.standardize_metric(t10_values, reference_period, area)
+        std_t10_values = self.standardize_metric(
+            t10_values, reference_period, area)
 
         if not self.should_use_dask:
             std_t10_values = std_t10_values.compute()

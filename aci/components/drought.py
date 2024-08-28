@@ -71,10 +71,10 @@ class DroughtComponent(Component):
         """
         preci = self.apply_mask("tp") if self.mask is not None else self.array
         precipitation_per_day = preci['tp'].resample(time='d').sum()
-        
+
         # Rechunk data after resampling for optimal performance
         if self.should_use_dask:
-            precipitation_per_day = precipitation_per_day.chunk({'time': -1})        
+            precipitation_per_day = precipitation_per_day.chunk({'time': -1})
         days_below_thresholds = xr.where(precipitation_per_day < 0.001, 1, 0)
         days_above_thresholds = xr.where(days_below_thresholds == 0, 1, 0)
         cumsum_above = days_above_thresholds.cumsum(dim='time')
@@ -166,7 +166,7 @@ class DroughtComponent(Component):
 
         if self.should_use_dask:
             max_days_drought_per_year = max_days_drought_per_year.chunk({'time': -1})
-        
+
         monthly_values = self.drought_interpolate(max_days_drought_per_year)
         # Standardize the interpolated monthly values
         standardized_values = self.standardize_metric(monthly_values, reference_period, area)
@@ -175,4 +175,3 @@ class DroughtComponent(Component):
             standardized_values = standardized_values.compute()
 
         return standardized_values
-    

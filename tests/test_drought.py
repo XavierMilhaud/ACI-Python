@@ -3,6 +3,7 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 import os
+import tempfile
 import sys
 import warnings
 
@@ -11,18 +12,19 @@ from drought import DroughtComponent
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-
 class TestDrought(unittest.TestCase):
 
     def setUp(self):
         """
-        Setup test data.
+        Setup test data in a temporary directory.
         """
-        self.mask_path = "test_mask.nc"
-        self.data_path = 'test_data.nc'
+        # Créer un répertoire temporaire pour les fichiers de test
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.data_path = os.path.join(self.temp_dir.name, 'test_data.nc')
+        self.mask_path = os.path.join(self.temp_dir.name, 'test_mask.nc')
         self.reference_period = ('2000-01-01', '2009-12-31')
 
-        # Generating test precipitation data
+        # Génération des données de précipitation pour les tests
         times = pd.date_range('2000-01-01', '2020-12-31', freq='D')
         latitudes = np.arange(48.80, 48.90, 0.1)
         longitudes = np.arange(2.20, 2.30, 0.1)
@@ -35,7 +37,7 @@ class TestDrought(unittest.TestCase):
         )
         data.to_netcdf(self.data_path)
 
-        # Generating test mask data
+        # Génération des données de masque pour les tests
         mask_data = np.ones((len(latitudes), len(longitudes)))
         mask = xr.Dataset(
             {'country': (['lat', 'lon'], mask_data)},
@@ -43,8 +45,7 @@ class TestDrought(unittest.TestCase):
         )
         mask.to_netcdf(self.mask_path)
 
-        # Initializing precomputed testing data parameters
-
+        # Initialisation des paramètres pour les données de test pré-calculées
         self.test_cases = ['test1', 'test2', 'test3', 'test4']
         self.reference_period_bis = ('2000-01-01', '2000-12-31')
         self.study_period_bis = ('2000-01-01', '2001-12-31')
@@ -53,8 +54,8 @@ class TestDrought(unittest.TestCase):
         """
         Clean up test data files.
         """
-        os.remove(self.data_path)
-        os.remove(self.mask_path)
+        # Supprimer le répertoire temporaire et tous les fichiers qu'il contient
+        self.temp_dir.cleanup()
 
     def test_std_max_consecutive_dry_days(self):
         """
@@ -78,10 +79,6 @@ class TestDrought(unittest.TestCase):
         # Ensure that the mean anomaly over the reference period is approximately zero
         ref_anomalies = anomalies.sel(time=slice(self.reference_period[0], self.reference_period[1]))
 
-        # Compute if using Dask to avoid NotImplementedError
-        if drought.use_dask:
-            ref_anomalies = ref_anomalies.compute()
-
         mean_anomaly = ref_anomalies.mean().item()
         self.assertFalse(np.isnan(mean_anomaly), "Mean anomaly should not be NaN.")
         self.assertAlmostEqual(mean_anomaly, 0, places=1)
@@ -90,7 +87,6 @@ class TestDrought(unittest.TestCase):
         std_anomaly = ref_anomalies.std().item()
         self.assertFalse(np.isnan(std_anomaly), "Std anomaly should not be NaN.")
         self.assertAlmostEqual(std_anomaly, 1, places=1)
-
 
     def test_no_precipitation(self):
         """
@@ -110,7 +106,6 @@ class TestDrought(unittest.TestCase):
         data.to_netcdf(self.data_path)
 
         drought = DroughtComponent(self.data_path, self.mask_path)
-
         anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
 
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when there is no precipitation.")
@@ -133,16 +128,11 @@ class TestDrought(unittest.TestCase):
         data.to_netcdf(self.data_path)
 
         drought = DroughtComponent(self.data_path, self.mask_path)
-
         anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
         cal = drought.max_consecutive_dry_days()
 
-        self.assertTrue(np.all(np.isnan(anomalies)),
-                        "Anomalies should be NaN when precipitation is constant below the threshold"
-                    )
-        self.assertTrue(np.all(cal == cal[0, 0, 0]),
-                        "Max consecutive dry days should be the same when precipitation is constant and below the threshold."
-                    )
+        self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant below the threshold.")
+        self.assertTrue(np.all(cal == cal[0, 0, 0]), "Max consecutive dry days should be the same when precipitation is constant and below the threshold.")
 
     def test_standardize_drought(self):
         """
@@ -179,7 +169,6 @@ class TestDrought(unittest.TestCase):
                     check_exact=False,
                     check_names=False
                 )
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

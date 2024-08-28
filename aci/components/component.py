@@ -4,6 +4,7 @@ import psutil
 import socket
 from dask.distributed import Client, LocalCluster
 
+
 class Component:
     """
     Base class for components that handle various climate data
@@ -24,7 +25,8 @@ class Component:
 
         Args:
             array (xarray.Dataset): The dataset containing the primary data.
-            mask (xarray.Dataset or None): The dataset containing the mask data, if provided.
+            mask (xarray.Dataset or None): The dataset containing the mask
+            data, if provided.
             file_name (str): The file name of the dataset.
         """
         warnings.filterwarnings(
@@ -35,7 +37,6 @@ class Component:
                 "future version. Use is_monotonic_increasing instead."
             )
         )
-
         self.use_dask = self.should_use_dask()
         self.chunk_size = self.determine_chunk_size(array)
 
@@ -44,7 +45,10 @@ class Component:
 
         # Check if mask is provided and apply chunking conditionally
         if mask is not None:
-            mask_chunk_size = {dim: self.chunk_size.get(dim, -1) for dim in mask.dims}
+            mask_chunk_size = {
+                dim: self.chunk_size.get(dim, -1)
+                for dim in mask.dims
+            }
             self.mask = mask.chunk(mask_chunk_size) if self.use_dask else mask
         else:
             self.mask = mask

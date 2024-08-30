@@ -142,7 +142,6 @@ class TestSeaLevelComponent(unittest.TestCase):
                 pd.testing.assert_series_equal(
                     combined_df['calculated_mean'],
                     combined_df['reference_mean'],
-                    check_less_precise=True,
                     check_names=False
                 )
 

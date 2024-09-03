@@ -16,3 +16,7 @@ clean:
 test:
 	# Exécuter tous les tests dans ./tests
 	cd tests && PYTHONWARNINGS="ignore::DeprecationWarning,ignore::PendingDeprecationWarning,ignore::FutureWarning" python -m unittest discover -s . -v
+
+coverage:
+	# Exécuter tous les tests dans ./tests
+	cd tests && PYTHONWARNINGS="ignore::DeprecationWarning,ignore::PendingDeprecationWarning,ignore::FutureWarning" python -m coverage run -m unittest && python -m coverage report 

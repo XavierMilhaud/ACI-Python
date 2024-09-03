@@ -1,5 +1,5 @@
 import xarray as xr
-from aci.components.component import Component
+from components.component import Component
 
 
 class PrecipitationComponent(Component):

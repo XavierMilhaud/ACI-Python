@@ -66,35 +66,16 @@ class ActuarialClimateIndex:
         """
         factor = 1 if factor is None else factor
 
-        dataframes = []
-        # Calculate anomalies and convert to DataFrames
-        preci_std = self.precipitation_component.monthly_max_anomaly("tp", 5,
-                                                                self.reference_period, True)
-        dataframes.append(
-            u.reduce_dataarray_to_dataframe(preci_std, 'precipitation')
-        )
-        
+        components = [self.drought_component, self.wind_component, self.precipitation_component]
 
-        wind_std = self.wind_component.std_wind_exceedance_frequency(self.reference_period, True)
-        dataframes.append(
-            u.reduce_dataarray_to_dataframe(wind_std, 'wind')
-        )
+        data_arrays = list(map(lambda component : component.calculate_component(self.reference_period, True), components))
+        data_arrays.append(self.temperature_component.std_t90(self.reference_period, True))
+        data_arrays.append(self.temperature_component.std_t10(self.reference_period, True))
 
-        drought_std = self.drought_component.std_max_consecutive_dry_days(self.reference_period,
-                                                                          True)
-        dataframes.append(
-            u.reduce_dataarray_to_dataframe(drought_std, 'drought')
-        )
+        variables = ['drought','wind','precipitation','t90','t10']
+        data_arrays_with_variable_names = zip(data_arrays, variables)
 
-        temp90_std = self.temperature_component.std_t90(self.reference_period, True)
-        dataframes.append(
-            u.reduce_dataarray_to_dataframe(temp90_std, 't90')
-        )
-
-        temp10_std = self.temperature_component.std_t10(self.reference_period, True)
-        dataframes.append(
-            u.reduce_dataarray_to_dataframe(temp10_std,'t10')
-        )
+        dataframes = list(map(lambda data_array : u.reduce_dataarray_to_dataframe(data_array[0], data_array[1]), data_arrays_with_variable_names))
 
         sea_level = self.sealevel_component.process()
         dataframes.append(

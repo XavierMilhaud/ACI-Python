@@ -124,7 +124,7 @@ class TestWindComponent(unittest.TestCase):
         Test the wind_exceedance_frequency method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        wind_exceedance_frequency = wind.wind_exceedance_frequency(self.reference_period)
+        wind_exceedance_frequency = wind.calculate_period_wind_exceedance_frequency(self.reference_period)
 
         # Verify that wind_exceedance_frequency is a DataArray
         self.assertIsInstance(wind_exceedance_frequency, xr.DataArray)
@@ -143,7 +143,7 @@ class TestWindComponent(unittest.TestCase):
         Test the std_wind_exceedance_frequency method.
         """
         wind = WindComponent(self.u10_path, self.v10_path, self.mask_path)
-        standardized_frequency = wind.std_wind_exceedance_frequency(self.reference_period)
+        standardized_frequency = wind.calculate_component(self.reference_period)
 
         # Verify that standardized_frequency is a DataArray
         self.assertIsInstance(standardized_frequency, xr.DataArray)
@@ -182,7 +182,7 @@ class TestWindComponent(unittest.TestCase):
                 reference_anomalies = xr.open_dataset(reference_anomalies_path)
                 wind_component = WindComponent(u10_path, v10_path, mask_path)
 
-                calculated_anomalies = wind_component.std_wind_exceedance_frequency(self.reference_period_bis, area=True)
+                calculated_anomalies = wind_component.calculate_component(self.reference_period_bis, area=True)
 
                 reference_variable_name = list(reference_anomalies.data_vars)[0]
                 np.testing.assert_allclose(calculated_anomalies.values, reference_anomalies[reference_variable_name].values)

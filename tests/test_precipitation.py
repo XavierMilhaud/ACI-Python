@@ -53,13 +53,13 @@ class TestPrecipitation(unittest.TestCase):
         os.remove(self.data_path)
         os.remove(self.mask_path)
 
-    def test_monthly_max_anomaly(self):
+    def test_calculate_component(self):
         """
-        Test the monthly_max_anomaly method.
+        Test the calculate_component method.
         """
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
 
-        anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
+        anomalies = precipitation.calculate_component(self.reference_period)
 
         # Verify that anomalies is a DataArray
         self.assertIsInstance(anomalies, xr.DataArray)
@@ -103,7 +103,7 @@ class TestPrecipitation(unittest.TestCase):
 
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
 
-        anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
+        anomalies = precipitation.calculate_component(self.reference_period)
 
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when there is no precipitation.")
 
@@ -126,11 +126,11 @@ class TestPrecipitation(unittest.TestCase):
 
         precipitation = PrecipitationComponent(self.data_path, self.mask_path)
  
-        anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period)
+        anomalies = precipitation.calculate_component(self.reference_period)
 
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when precipitation is constant.")
 
-    def test_monthly_max_anomaly_bis(self):
+    def test_calculate_component_bis(self):
         test_cases = ['test1', 'test2', 'test3', 'test4']
 
         for test_case in test_cases:
@@ -146,7 +146,7 @@ class TestPrecipitation(unittest.TestCase):
                 precipitation = PrecipitationComponent(data_path, mask_path)
 
                 # Calculer les anomalies
-                anomalies = precipitation.monthly_max_anomaly('tp', 5, self.reference_period_bis)
+                anomalies = precipitation.calculate_component(self.reference_period_bis)
 
                 # Comparer avec les anomalies de référence
                 np.testing.assert_allclose(anomalies.values, reference_anomalies['tp'].values)

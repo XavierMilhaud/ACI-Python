@@ -134,7 +134,7 @@ class DroughtComponent(Component):
 
         return monthly_values
 
-    def std_max_consecutive_dry_days(self, reference_period, area=None):
+    def calculate_component(self, reference_period, area=None):
         """
         Standardize the maximum number of consecutive dry days.
 

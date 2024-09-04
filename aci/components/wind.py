@@ -91,7 +91,7 @@ class WindComponent(Component):
         days_above_thresholds_renamed = days_above_thresholds.rename('wind')
         return days_above_thresholds_renamed
 
-    def wind_exceedance_frequency(self, reference_period):
+    def calculate_period_wind_exceedance_frequency(self, reference_period, season:bool=False):
         """
         Calculate the frequency of daily mean wind power above the 90th percentile.
 
@@ -102,10 +102,14 @@ class WindComponent(Component):
         - xarray.DataArray: Wind exceedance frequency.
         """
         days_above_thresholds = self.days_above_thresholds(reference_period)
-        monthly_total_days_above = days_above_thresholds.resample(time='m').sum() / days_above_thresholds.resample(time="m").count()
-        return monthly_total_days_above
+        if season :
+            period = 'QS-DEC'
+        else :
+            period = 'm'
+        period_total_days_above = days_above_thresholds.resample(time=period).sum() / days_above_thresholds.resample(time=period).count()
+        return period_total_days_above
 
-    def std_wind_exceedance_frequency(self, reference_period, area=None):
+    def calculate_component(self, reference_period, area=None, season:bool=False):
         """
         Standardize the wind exceedance frequency.
 
@@ -116,20 +120,6 @@ class WindComponent(Component):
         Returns:
         - xarray.DataArray: Standardized wind exceedance frequency.
         """
-        monthly_total_days_above = self.wind_exceedance_frequency(reference_period)
-        return self.standardize_metric(monthly_total_days_above, reference_period, area)
+        period_total_days_above = self.calculate_period_wind_exceedance_frequency(reference_period, season)
+        return self.standardize_metric(period_total_days_above, reference_period, area)
 
-    def std_seasonly_wind_exceedance_frequency(self, reference_period, area=None):
-        """
-        Standardize the seasonal wind exceedance frequency.
-
-        Parameters:
-        - reference_period (tuple): A tuple containing the start and end dates of the reference period.
-        - area (bool): If True, calculate the area-averaged standardized metric. Default is None.
-
-        Returns:
-        - xarray.DataArray: Standardized seasonal wind exceedance frequency.
-        """
-        days_above_thresholds = self.days_above_thresholds(reference_period)
-        seasonly_total_days_above = days_above_thresholds.resample(time='QS-DEC').sum() / days_above_thresholds.resample(time='QS-DEC').count()
-        return self.standardize_metric(seasonly_total_days_above, reference_period, area)

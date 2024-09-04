@@ -56,12 +56,12 @@ class TestDrought(unittest.TestCase):
         os.remove(self.data_path)
         os.remove(self.mask_path)
 
-    def test_std_max_consecutive_dry_days(self):
+    def test_calculate_drought_component(self):
         """
-        Test the std_max_consecutive_dry_days method.
+        Test the calculate_component method of drought.
         """
         drought = DroughtComponent(self.data_path, self.mask_path)
-        anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
+        anomalies = drought.calculate_component(self.reference_period)
 
         # Verify that anomalies is a DataArray
         self.assertIsInstance(anomalies, xr.DataArray)
@@ -105,7 +105,7 @@ class TestDrought(unittest.TestCase):
 
         drought = DroughtComponent(self.data_path, self.mask_path)
 
-        anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
+        anomalies = drought.calculate_component(self.reference_period)
 
         self.assertTrue(np.all(np.isnan(anomalies)), "Anomalies should be NaN when there is no precipitation.")
     
@@ -128,7 +128,7 @@ class TestDrought(unittest.TestCase):
 
         drought = DroughtComponent(self.data_path, self.mask_path)
 
-        anomalies = drought.std_max_consecutive_dry_days(self.reference_period)
+        anomalies = drought.calculate_component(self.reference_period)
         cal = drought.max_consecutive_dry_days()
 
         self.assertTrue(np.all(np.isnan(anomalies)),
@@ -151,7 +151,7 @@ class TestDrought(unittest.TestCase):
                 drought_component = DroughtComponent(precipitation_path, mask_path)
 
                 # Calculer les anomalies
-                calculated_anomalies = drought_component.std_max_consecutive_dry_days(self.reference_period_bis, area=True)
+                calculated_anomalies = drought_component.calculate_component(self.reference_period_bis, area=True)
 
                 # Lire les anomalies de référence
                 reference_anomalies = xr.open_dataset(reference_anomalies_path)

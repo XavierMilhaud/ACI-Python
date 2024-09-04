@@ -26,7 +26,7 @@ class PrecipitationComponent(Component):
         mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
         super().__init__(precipitation, mask, precipitation_path)
 
-    def monthly_max(self, var_name, window_size):
+    def calculate_maximum_precipitation_over_window(self, var_name:str='tp', window_size:int=5, season:bool=False):
         """
         Calculates the maximum monthly precipitation over a specified window size.
 
@@ -41,10 +41,14 @@ class PrecipitationComponent(Component):
         O(N) for calculating rolling sum and resampling, where N is the number of time steps in the dataset.
         """
         rolling_sum = self.calculate_rolling_sum(var_name, window_size)
-        monthly_max = rolling_sum.resample(time='M').max()
-        return monthly_max
+        if season :
+            period = 'QS-DEC'
+        else :
+            period = 'M'
+        period_max = rolling_sum.resample(time=period).max()
+        return period_max
 
-    def monthly_max_anomaly(self, var_name, window_size, reference_period, area=None):
+    def calculate_component(self, reference_period, area=None, var_name:str='tp', window_size:int=5, season:bool=False):
         """
         Calculates the anomaly of maximum monthly precipitation relative to a reference period.
 
@@ -62,44 +66,5 @@ class PrecipitationComponent(Component):
         O(N + R) for calculating monthly maximum and standardizing, where N is the number
         of time steps and R is the size of the reference period.
         """
-        monthly_max = self.monthly_max(var_name, window_size)
-        return self.standardize_metric(monthly_max, reference_period, area)
-
-    def seasonly_max(self, var_name, window_size):
-        """
-        Calculates the maximum seasonal precipitation over a specified window size.
-
-        Args:
-            var_name (str): The variable name in the precipitation data to calculate the seasonal maximum.
-            window_size (int): The size of the rolling window in days.
-
-        Returns:
-            xarray.DataArray: The maximum seasonal precipitation.
-
-        Complexity:
-        O(N) for calculating rolling sum and resampling, where N is the number of time steps in the dataset.
-        """
-        rolling_sum = self.calculate_rolling_sum(var_name, window_size)
-        seasonly_max = rolling_sum.resample(time='QS-DEC').max()
-        return seasonly_max
-
-    def seasonly_max_anomaly(self, var_name, window_size, reference_period, area=None):
-        """
-        Calculates the anomaly of maximum seasonal precipitation relative to a reference period.
-
-        Args:
-            var_name (str): The variable name in the precipitation data.
-            window_size (int): The size of the rolling window in days.
-            reference_period (tuple): A tuple containing the start and end dates of the reference
-            period (e.g., ('1961-01-01', '1989-12-31')).
-            area (bool): If True, calculate the area-averaged anomaly. Default is None.
-
-        Returns:
-            xarray.DataArray: The anomaly of maximum seasonal precipitation.
-
-        Complexity:
-        O(N + R) for calculating seasonal maximum and standardizing, where N is the number of time
-        steps and R is the size of the reference period.
-        """
-        seasonly_max = self.seasonly_max(var_name, window_size)
-        return self.standardize_metric(seasonly_max, reference_period, area)
+        period_max = self.calculate_maximum_precipitation_over_window(var_name, window_size, season)
+        return self.standardize_metric(period_max, reference_period, area)

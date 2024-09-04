@@ -1,11 +1,12 @@
 import pandas as pd
+from pandas.tseries.offsets import MonthEnd
+
 import components.precipitation as pc
 import components.wind as wc
 import components.sealevel as sl
 import components.drought as dc
 import components.temperature as tc
-from pandas.tseries.offsets import MonthEnd
-
+import utils as u
 
 class ActuarialClimateIndex:
     """
@@ -65,48 +66,49 @@ class ActuarialClimateIndex:
         """
         factor = 1 if factor is None else factor
 
+        dataframes = []
         # Calculate anomalies and convert to DataFrames
         preci_std = self.precipitation_component.monthly_max_anomaly("tp", 5,
-                                                                     self.reference_period, True)
-        p_df = preci_std.to_dataframe()
-        p_df.columns = ["precipitation"]
+                                                                self.reference_period, True)
+        dataframes.append(
+            u.reduce_dataarray_to_dataframe(preci_std, 'precipitation')
+        )
+        
 
         wind_std = self.wind_component.std_wind_exceedance_frequency(self.reference_period, True)
-        w_df = wind_std.to_dataframe(name="windpower")
-        w_df.columns = ["windpower"]
+        dataframes.append(
+            u.reduce_dataarray_to_dataframe(wind_std, 'wind')
+        )
 
         drought_std = self.drought_component.std_max_consecutive_dry_days(self.reference_period,
                                                                           True)
-        cdd_df = drought_std.to_dataframe()
-        cdd_df.columns = ["drought"]
+        dataframes.append(
+            u.reduce_dataarray_to_dataframe(drought_std, 'drought')
+        )
 
         temp90_std = self.temperature_component.std_t90(self.reference_period, True)
-        t90_df = temp90_std.to_dataframe()
-        t90_df.columns = ["T90"]
+        dataframes.append(
+            u.reduce_dataarray_to_dataframe(temp90_std, 't90')
+        )
 
         temp10_std = self.temperature_component.std_t10(self.reference_period, True)
-        t10_df = temp10_std.to_dataframe()
-        t10_df.columns = ["T10"]
+        dataframes.append(
+            u.reduce_dataarray_to_dataframe(temp10_std,'t10')
+        )
 
-        sea_lev = self.sealevel_component.process()
-        sea_std = sea_lev.mean(axis=1)
-        sea_df = pd.DataFrame(sea_std, columns=["sea_mean"])
-        sea_df["time"] = pd.to_datetime(sea_df.index, format="%Y-%m-%d") + MonthEnd()
-        sea_df.set_index("time", inplace=True)
-
+        sea_level = self.sealevel_component.process()
+        dataframes.append(
+            u.reduce_sealevel_over_region(sea_level)
+        )
         # Merge DataFrames
-        df1 = pd.merge(w_df["windpower"], p_df["precipitation"], left_index=True, right_index=True)
-        df2 = pd.merge(df1, cdd_df["drought"], left_index=True, right_index=True)
-        df3 = pd.merge(df2, sea_df["sea_mean"], left_index=True, right_index=True)
-        df4 = pd.merge(df3, t90_df["T90"], left_index=True, right_index=True)
-        aci_composites = pd.merge(df4, t10_df["T10"], left_index=True, right_index=True)
+        aci_composites = u.merge_dataframes(dataframes)
 
         # Calculate ACI
-        aci_composites["ACI"] = (aci_composites["T90"]
-                                 - aci_composites["T10"]
+        aci_composites["ACI"] = (aci_composites["t90"]
+                                 - aci_composites["t10"]
                                  + aci_composites["precipitation"]
                                  + aci_composites["drought"]
-                                 + factor * aci_composites["sea_mean"]
-                                 + aci_composites["windpower"]) / 6
+                                 + factor * aci_composites["sealevel"]
+                                 + aci_composites["wind"]) / 6
 
         return aci_composites

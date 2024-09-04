@@ -88,7 +88,8 @@ class WindComponent(Component):
         wind_power = self.wind_power()
         diff_array = wind_power_thresholds - wind_power
         days_above_thresholds = xr.where(diff_array < 0, 1, 0)
-        return days_above_thresholds
+        days_above_thresholds_renamed = days_above_thresholds.rename('wind')
+        return days_above_thresholds_renamed
 
     def wind_exceedance_frequency(self, reference_period):
         """

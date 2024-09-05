@@ -108,27 +108,10 @@ class TemperatureComponent(Component):
         Complexity:
         O(N), where N is the number of time steps in the study period.
         """
-        temperature_days_max = self.temp_extremum("max", "day")
-        percentile_90_calendar_days = self.percentiles(90, reference_period, "day")
+        tx90 = self.calculate_halfday_component(reference_period, 90, 'day', 'max', above_threshold=True)
 
-        time_index = temperature_days_max["time"].dt.dayofyear
+        tn90 = self.calculate_halfday_component(reference_period, 90, 'night','max', above_threshold=True)
 
-        difference_array_90_days = (temperature_days_max -
-                                    percentile_90_calendar_days.sel(dayofyear=time_index)).drop_vars("dayofyear")
-
-        days_90_above_thresholds = xr.where(difference_array_90_days > 0, 1, 0)
-        tx90 = days_90_above_thresholds.resample(time='ME').sum()  / days_90_above_thresholds.resample(time="ME").count()
-
-        temperature_nights_max = self.temp_extremum("max", "night")
-        percentile_90_calendar_nights = self.percentiles(90, reference_period, "night")
-
-        time_index = temperature_nights_max["time"].dt.dayofyear
-
-        difference_array_90_nights = (temperature_nights_max -
-                                      percentile_90_calendar_nights.sel(dayofyear=time_index)).drop_vars("dayofyear")
-
-        nights_90_above_thresholds = xr.where(difference_array_90_nights > 0, 1, 0)
-        tn90 = nights_90_above_thresholds.resample(time='ME').sum() / nights_90_above_thresholds.resample(time="ME").count()
 
         return 0.5 * (tx90 + tn90)
 
@@ -145,30 +128,32 @@ class TemperatureComponent(Component):
         Complexity:
         O(N), where N is the number of time steps in the study period.
         """
-        temperature_days_min = self.temp_extremum("min", "day")
-        percentile_10_calendar_days = self.percentiles(10, reference_period, "day")
+        tx10 = self.calculate_halfday_component(reference_period, 10, 'day', 'min', above_threshold=False)
 
-        time_index = temperature_days_min["time"].dt.dayofyear
-
-        difference_array_10_days = (temperature_days_min -
-                                    percentile_10_calendar_days.sel(dayofyear=time_index)).drop_vars("dayofyear")
-
-        days_10_above_thresholds = xr.where(difference_array_10_days < 0, 1, 0)
-        tx10 = days_10_above_thresholds.resample(time='ME').sum() / days_10_above_thresholds.resample(time="ME").count()
-
-        temperature_nights_min = self.temp_extremum("min", "night")
-        percentile_10_calendar_nights = self.percentiles(10, reference_period, "night")
-
-        time_index = temperature_nights_min["time"].dt.dayofyear
-
-        difference_array_10_nights = (temperature_nights_min -
-                                      percentile_10_calendar_nights.sel(dayofyear=time_index)).drop_vars("dayofyear")
-
-        nights_10_above_thresholds = xr.where(difference_array_10_nights < 0, 1, 0)
-        tn10 = nights_10_above_thresholds.resample(time='ME').sum() /  nights_10_above_thresholds.resample(time="ME").count()
+        tn10 = self.calculate_halfday_component(reference_period, 10, 'night', 'min', above_threshold=False)
 
         return 0.5 * (tx10 + tn10)
 
+    def calculate_halfday_component(self, reference_period, percentile:float, part_of_day:str, type_of_extremum:str, above_threshold:bool=True):
+
+        temperature_halfday_extremum = self.temp_extremum(type_of_extremum,part_of_day)
+
+        temperature_percentile_halfday = self.percentiles(percentile, reference_period, part_of_day)
+
+        time_index = temperature_halfday_extremum["time"].dt.dayofyear
+
+        difference_between_current_and_reference_period_percentile = (temperature_halfday_extremum -
+                                      temperature_percentile_halfday.sel(dayofyear=time_index)).drop_vars("dayofyear")
+        
+        if above_threshold:
+            halfday_crossing_threshold = xr.where(difference_between_current_and_reference_period_percentile > 0, 1, 0)
+        else :
+            halfday_crossing_threshold = xr.where(difference_between_current_and_reference_period_percentile < 0, 1, 0)
+
+        halfday_component = halfday_crossing_threshold.resample(time='ME').sum() / halfday_crossing_threshold.resample(time="ME").count()
+
+        return halfday_component
+ 
     def std_t90(self, reference_period, area=None):
         """
         Standardize T90 values.

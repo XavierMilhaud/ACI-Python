@@ -71,7 +71,7 @@ class WindComponent(Component):
 
         dset_mean = wind_power_reference.groupby("time.dayofyear").mean().sel(dayofyear=time_index)
         dset_std = wind_power_reference.groupby("time.dayofyear").std().sel(dayofyear=time_index)
-        wind_power_thresholds = (dset_mean + 1.28 * dset_std).drop("dayofyear")
+        wind_power_thresholds = (dset_mean + 1.28 * dset_std).drop_vars("dayofyear")
         return wind_power_thresholds
 
     def days_above_thresholds(self, reference_period):
@@ -105,7 +105,7 @@ class WindComponent(Component):
         if season :
             period = 'QS-DEC'
         else :
-            period = 'm'
+            period = 'ME'
         period_total_days_above = days_above_thresholds.resample(time=period).sum() / days_above_thresholds.resample(time=period).count()
         return period_total_days_above
 

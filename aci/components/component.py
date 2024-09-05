@@ -74,7 +74,7 @@ class Component:
         time_index = metric.time.dt.month
         mean = reference.groupby("time.month").mean().sel(month=time_index)
         std = reference.groupby("time.month").std().sel(month=time_index)
-        standardized = ((metric - mean) / std).drop("month")
+        standardized = ((metric - mean) / std).drop_vars("month")
 
         if area:
             return standardized.mean(dim=['latitude', 'longitude'])
@@ -94,5 +94,5 @@ class Component:
         """
         data = self.apply_mask(var_name)
         var = data[var_name]
-        rolling_sum = var.rolling(time=window_size).sum(dim='time')
+        rolling_sum = var.rolling(time=window_size).sum()
         return rolling_sum

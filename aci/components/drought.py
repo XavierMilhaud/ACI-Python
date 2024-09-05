@@ -5,10 +5,6 @@ import numpy as np
 import pandas as pd
 import warnings
 
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
-warnings.filterwarnings("ignore", category=UserWarning)
-
 class DroughtComponent(Component):
     """
     Class to process drought data and calculate standardized anomalies
@@ -78,7 +74,7 @@ class DroughtComponent(Component):
         days_above_thresholds = xr.where(days_below_thresholds == 0, 1, 0)
         cumsum_above = days_above_thresholds.cumsum(dim='time')
         days = cumsum_above - cumsum_above.where(days_above_thresholds == 0).ffill(dim='time').fillna(0)
-        result = days.resample(time='Y').max()
+        result = days.resample(time='YE').max()
 
         
         return result
@@ -115,17 +111,19 @@ class DroughtComponent(Component):
                 weight2 = month / 12
                 interpolated_value = weight1 * cdd_k + weight2 * cdd_k_plus_1
                 monthly_time = np.datetime64(f"{years[i]}-{month:02d}-01")
+                monthly_time_ns = monthly_time.astype('datetime64[ns]')
                 interpolated_value = interpolated_value.expand_dims("time")
-                interpolated_value["time"] = [monthly_time]
+                interpolated_value["time"] = [monthly_time_ns]
                 monthly_values.append(interpolated_value)
 
         # Handle the last year by repeating the values of the last available year
         cdd_last = max_days_drought_per_year.isel(time=-1)
         for month in range(1, 13):
             monthly_time = np.datetime64(f"{years[-1]}-{month:02d}-01")
+            monthly_time_ns = monthly_time.astype('datetime64[ns]')
             repeated_value = cdd_last.copy()
             repeated_value = repeated_value.expand_dims("time")
-            repeated_value["time"] = [monthly_time]
+            repeated_value["time"] = [monthly_time_ns]
             monthly_values.append(repeated_value)
 
         monthly_values = xr.concat(monthly_values, dim="time")

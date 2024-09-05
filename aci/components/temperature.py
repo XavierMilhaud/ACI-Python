@@ -114,10 +114,10 @@ class TemperatureComponent(Component):
         time_index = temperature_days_max["time"].dt.dayofyear
 
         difference_array_90_days = (temperature_days_max -
-                                    percentile_90_calendar_days.sel(dayofyear=time_index)).drop("dayofyear")
+                                    percentile_90_calendar_days.sel(dayofyear=time_index)).drop_vars("dayofyear")
 
         days_90_above_thresholds = xr.where(difference_array_90_days > 0, 1, 0)
-        tx90 = days_90_above_thresholds.resample(time='m').sum() / days_90_above_thresholds.resample(time="m").count()
+        tx90 = days_90_above_thresholds.resample(time='ME').sum()  / days_90_above_thresholds.resample(time="ME").count()
 
         temperature_nights_max = self.temp_extremum("max", "night")
         percentile_90_calendar_nights = self.percentiles(90, reference_period, "night")
@@ -125,10 +125,10 @@ class TemperatureComponent(Component):
         time_index = temperature_nights_max["time"].dt.dayofyear
 
         difference_array_90_nights = (temperature_nights_max -
-                                      percentile_90_calendar_nights.sel(dayofyear=time_index)).drop("dayofyear")
+                                      percentile_90_calendar_nights.sel(dayofyear=time_index)).drop_vars("dayofyear")
 
         nights_90_above_thresholds = xr.where(difference_array_90_nights > 0, 1, 0)
-        tn90 = nights_90_above_thresholds.resample(time='m').sum() / nights_90_above_thresholds.resample(time="m").count()
+        tn90 = nights_90_above_thresholds.resample(time='ME').sum() / nights_90_above_thresholds.resample(time="ME").count()
 
         return 0.5 * (tx90 + tn90)
 
@@ -151,10 +151,10 @@ class TemperatureComponent(Component):
         time_index = temperature_days_min["time"].dt.dayofyear
 
         difference_array_10_days = (temperature_days_min -
-                                    percentile_10_calendar_days.sel(dayofyear=time_index)).drop("dayofyear")
+                                    percentile_10_calendar_days.sel(dayofyear=time_index)).drop_vars("dayofyear")
 
         days_10_above_thresholds = xr.where(difference_array_10_days < 0, 1, 0)
-        tx10 = days_10_above_thresholds.resample(time='m').sum() / days_10_above_thresholds.resample(time="m").count()
+        tx10 = days_10_above_thresholds.resample(time='ME').sum() / days_10_above_thresholds.resample(time="ME").count()
 
         temperature_nights_min = self.temp_extremum("min", "night")
         percentile_10_calendar_nights = self.percentiles(10, reference_period, "night")
@@ -162,10 +162,10 @@ class TemperatureComponent(Component):
         time_index = temperature_nights_min["time"].dt.dayofyear
 
         difference_array_10_nights = (temperature_nights_min -
-                                      percentile_10_calendar_nights.sel(dayofyear=time_index)).drop("dayofyear")
+                                      percentile_10_calendar_nights.sel(dayofyear=time_index)).drop_vars("dayofyear")
 
         nights_10_above_thresholds = xr.where(difference_array_10_nights < 0, 1, 0)
-        tn10 = nights_10_above_thresholds.resample(time='m').sum() / nights_10_above_thresholds.resample(time="m").count()
+        tn10 = nights_10_above_thresholds.resample(time='ME').sum() /  nights_10_above_thresholds.resample(time="ME").count()
 
         return 0.5 * (tx10 + tn10)
 

@@ -23,7 +23,7 @@ class TestTemperature(unittest.TestCase):
         self.reference_period = ('2000-01-01', '2004-12-31')
 
         # Generating test temperature data
-        times = pd.date_range('2000-01-01', '2005-12-31', freq='H')
+        times = pd.date_range('2000-01-01', '2005-12-31', freq='h')
         latitudes = np.arange(48.0, 48.5, 0.1)
         longitudes = np.arange(1.0, 1.5, 0.1)
         np.random.seed(0)
@@ -81,7 +81,7 @@ class TestTemperature(unittest.TestCase):
         """
         Test with no temperature variation.
         """
-        times = pd.date_range('2000-01-01', '2005-12-31', freq='H')
+        times = pd.date_range('2000-01-01', '2005-12-31', freq='h')
         latitudes = np.arange(48.0, 48.5, 0.1)
         longitudes = np.arange(1.0, 1.5, 0.1)
 
@@ -104,7 +104,7 @@ class TestTemperature(unittest.TestCase):
         """
         Test with constant temperature.
         """
-        times = pd.date_range('2000-01-01', '2005-12-31', freq='H')
+        times = pd.date_range('2000-01-01', '2005-12-31', freq='h')
         latitudes = np.arange(48.0, 48.5, 0.1)
         longitudes = np.arange(1.0, 1.5, 0.1)
 
@@ -127,7 +127,7 @@ class TestTemperature(unittest.TestCase):
         """
         Test with random temperature variations.
         """
-        times = pd.date_range('2000-01-01', '2005-12-31', freq='H')
+        times = pd.date_range('2000-01-01', '2005-12-31', freq='h')
         latitudes = np.arange(48.0, 48.5, 0.1)
         longitudes = np.arange(1.0, 1.5, 0.1)
 

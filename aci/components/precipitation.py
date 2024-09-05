@@ -44,7 +44,7 @@ class PrecipitationComponent(Component):
         if season :
             period = 'QS-DEC'
         else :
-            period = 'M'
+            period = 'ME'
         period_max = rolling_sum.resample(time=period).max()
         return period_max
 

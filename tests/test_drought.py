@@ -164,8 +164,8 @@ class TestDrought(unittest.TestCase):
                 combined_df = pd.merge(calculated_df, reference_df, on='time', suffixes=('_calculated', '_reference')).dropna()
 
                 # Remplacer les valeurs infinies par un nombre très grand pour comparaison
-                combined_df['calculated_mean'].replace([np.inf, -np.inf], 1e10, inplace=True)
-                combined_df['reference_mean'].replace([np.inf, -np.inf], 1e10, inplace=True)
+                combined_df['calculated_mean'] = combined_df['calculated_mean'].replace([np.inf, -np.inf], 1e10)
+                combined_df['reference_mean'] = combined_df['reference_mean'].replace([np.inf, -np.inf], 1e10)
 
                 pd.testing.assert_series_equal(
                     combined_df['calculated_mean'],

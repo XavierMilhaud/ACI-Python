@@ -25,7 +25,7 @@ class TestActuarialClimateIndex(unittest.TestCase):
         self.country_abbrev = 'FRA'
 
         # Generating test temperature data
-        times = pd.date_range('1960-01-01', '1970-12-31', freq='H')
+        times = pd.date_range('1960-01-01', '1970-12-31', freq='h')
         latitudes = [49.0, 48.75, 48.5, 48.25, 48.0]
         longitudes = [1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0]
         np.random.seed(0)

@@ -25,7 +25,7 @@ class TestSeaLevelComponent(unittest.TestCase):
             os.makedirs(self.data_path)
 
         # Creating a sample sea level data file
-        dates = pd.date_range('1960-01-01', '1964-12-31', freq='M')
+        dates = pd.date_range('1960-01-01', '1964-12-31', freq='ME')
         values = np.random.rand(len(dates)) * 100
         df = pd.DataFrame({"Date": dates, "Measurement_test": values})
         df['Date'] = df['Date'].apply(lambda x: float(f"{x.year}.{x.month:02}125"))

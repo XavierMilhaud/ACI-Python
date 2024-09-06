@@ -1,8 +1,9 @@
+from typing import List
+from functools import reduce
 import pandas as pd
 import xarray as xr
 from pandas.tseries.offsets import MonthEnd
-from typing import List
-from functools import reduce
+
 
 def reduce_dataarray_to_dataframe(array : xr.DataArray, column_name:str=None) -> pd.DataFrame :
     """

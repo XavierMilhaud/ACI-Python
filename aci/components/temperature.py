@@ -12,14 +12,15 @@ class TemperatureComponent(Component):
         mask_data (xarray.Dataset): Dataset containing mask data.
     """
 
-    def __init__(self, temperature_data_path, mask_data_path):
+    def __init__(self, temperature_data_path:str, mask_data_path:str,
+    percentile:float, extremum:str, above_thresholds:bool=True):
         """
         Initialize the TemperatureComponent object.
 
         Parameters:
         - temperature_data_path (str): Path to the dataset containing temperature data.
         - mask_data_path (str): Path to the dataset containing mask data.
-
+        
         Complexity:
         O(T) for loading and initializing temperature and mask data, where T is the size of the temperature dataset.
         """
@@ -33,6 +34,10 @@ class TemperatureComponent(Component):
         self.temperature_nights = temperature.isel(
             time=temperature.time.dt.hour.isin([0, 1, 2, 3, 4, 5, 22, 23])
         )
+
+        self.percentile = percentile
+        self.extremum = extremum
+        self.above_thresholds = above_thresholds
 
     def temp_extremum(self, extremum, period):
         """
@@ -62,7 +67,7 @@ class TemperatureComponent(Component):
         else:
             raise ValueError("extremum must be 'min' or 'max'")
 
-    def percentiles(self, n, reference_period, tempo):
+    def calculate_percentiles(self, n, reference_period, tempo):
         """
         Compute percentiles for day or night temperatures over a reference period.
 
@@ -95,57 +100,27 @@ class TemperatureComponent(Component):
         percentile_calendar = percentile_reference.groupby('time.dayofyear').reduce(np.percentile, q=n)
         return percentile_calendar
 
-    def t90(self, reference_period):
+    def calculate_halfday_component(self, reference_period, part_of_day:str):
         """
-        Compute T90 (90th percentile threshold exceedance) for days and nights.
+        Calculates the halfday component of the temperature
 
         Parameters:
         - reference_period (tuple): Start and end dates of the reference period.
+        - part_of_day (str) : 'day' or 'night' to specify the time period.
 
         Returns:
-        - xarray.DataArray: T90 values.
-
-        Complexity:
-        O(N), where N is the number of time steps in the study period.
+        - xarray.DataArray: daily or nightly component for each month of the year.
         """
-        tx90 = self.calculate_halfday_component(reference_period, 90, 'day', 'max', above_threshold=True)
+        temperature_halfday_extremum = self.temp_extremum(self.extremum,part_of_day)
 
-        tn90 = self.calculate_halfday_component(reference_period, 90, 'night','max', above_threshold=True)
-
-
-        return 0.5 * (tx90 + tn90)
-
-    def t10(self, reference_period):
-        """
-        Compute T10 (10th percentile threshold exceedance) for days and nights.
-
-        Parameters:
-        - reference_period (tuple): Start and end dates of the reference period.
-
-        Returns:
-        - xarray.DataArray: T10 values.
-
-        Complexity:
-        O(N), where N is the number of time steps in the study period.
-        """
-        tx10 = self.calculate_halfday_component(reference_period, 10, 'day', 'min', above_threshold=False)
-
-        tn10 = self.calculate_halfday_component(reference_period, 10, 'night', 'min', above_threshold=False)
-
-        return 0.5 * (tx10 + tn10)
-
-    def calculate_halfday_component(self, reference_period, percentile:float, part_of_day:str, type_of_extremum:str, above_threshold:bool=True):
-
-        temperature_halfday_extremum = self.temp_extremum(type_of_extremum,part_of_day)
-
-        temperature_percentile_halfday = self.percentiles(percentile, reference_period, part_of_day)
+        temperature_percentile_halfday = self.calculate_percentiles(self.percentile, reference_period, part_of_day)
 
         time_index = temperature_halfday_extremum["time"].dt.dayofyear
 
         difference_between_current_and_reference_period_percentile = (temperature_halfday_extremum -
                                       temperature_percentile_halfday.sel(dayofyear=time_index)).drop_vars("dayofyear")
         
-        if above_threshold:
+        if self.above_thresholds:
             halfday_crossing_threshold = xr.where(difference_between_current_and_reference_period_percentile > 0, 1, 0)
         else :
             halfday_crossing_threshold = xr.where(difference_between_current_and_reference_period_percentile < 0, 1, 0)
@@ -153,52 +128,26 @@ class TemperatureComponent(Component):
         halfday_component = halfday_crossing_threshold.resample(time='ME').sum() / halfday_crossing_threshold.resample(time="ME").count()
 
         return halfday_component
- 
-    def std_t90(self, reference_period, area=None):
+
+    def calculate_component(self, reference_period, area=None):
         """
-        Standardize T90 values.
+        Calculates the temperature component.
 
         Parameters:
         - reference_period (tuple): Start and end dates of the reference period.
-        - area (bool): Whether to compute the area-averaged standard deviation.
+        - area (bool): If True, calculate the area-averaged anomaly. Default is None.
 
         Returns:
-        - xarray.DataArray: Standardized T90 values.
-
-        Complexity:
-        O(N), where N is the number of time steps in the study period.
+        - xarray.DataArray: temperature component for each month of the year.
         """
-        t_90 = self.t90(reference_period)
-        return self.standardize_metric(t_90, reference_period, area)
+        day_component = self.calculate_halfday_component(reference_period, 'day')
 
-    def std_t10(self, reference_period, area=None):
-        """
-        Standardize T10 values.
+        night_component = self.calculate_halfday_component(reference_period, 'night')
 
-        Parameters:
-        - reference_period (tuple): Start and end dates of the reference period.
-        - area (bool): Whether to compute the area-averaged standard deviation.
+        component = 0.5 * (day_component + night_component)
 
-        Returns:
-        - xarray.DataArray: Standardized T10 values.
+        component_standardized = self.standardize_metric(component, reference_period, area)
 
-        Complexity:
-        O(N), where N is the number of time steps in the study period.
-        """
-        t10 = self.t10(reference_period)
-        return self.standardize_metric(t10, reference_period, area)
+        return component_standardized
 
-    def plot_components(self, component_data0, component_data1, n):
-        """
-        Plot rolling mean of temperature components.
 
-        Parameters:
-        - component_data0 (xarray.DataArray): First temperature component data.
-        - component_data1 (xarray.DataArray): Second temperature component data.
-        - n (int): Rolling window size.
-
-        Complexity:
-        O(N), where N is the number of time steps in the component data.
-        """
-        component_data0["t2m"].rolling(time=n, center=True).mean().plot()
-        component_data1["t2m"].rolling(time=n, center=True).mean().plot()

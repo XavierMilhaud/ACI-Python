@@ -2,7 +2,6 @@ import xarray as xr
 import os
 import numpy as np
 import pandas as pd
-import warnings
 
 from aci.components.component import Component
 

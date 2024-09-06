@@ -130,9 +130,9 @@ class SeaLevelComponent(Component):
                 return pd.NaT
 
         corrected_dates = data.index.to_series().apply(convert_date)
-        data = data.assign(Corrected_Date=corrected_dates)
-        data = data.dropna(subset=['Corrected_Date'])
-        data = data.set_index('Corrected_Date')
+        data = data.assign(time=corrected_dates)
+        data = data.dropna(subset=['time'])
+        data = data.set_index('time')
         data.sort_index(inplace=True)
         return data
 

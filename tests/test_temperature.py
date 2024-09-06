@@ -3,8 +3,6 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 import os
-import sys
-import warnings
 
 from aci.components.temperature import TemperatureComponent
 
@@ -59,8 +57,9 @@ class TestTemperature(unittest.TestCase):
         """
         Test the std_t90 method.
         """
-        temperature = TemperatureComponent(self.data_path, self.mask_path)
-        anomalies = temperature.std_t90(self.reference_period)
+        temperature = TemperatureComponent(self.data_path, self.mask_path,
+        percentile = 90, extremum='max', above_thresholds=True)
+        anomalies = temperature.calculate_component(self.reference_period)
 
         # Verify that anomalies is a Dataset
         self.assertIsInstance(anomalies, xr.Dataset)
@@ -91,8 +90,9 @@ class TestTemperature(unittest.TestCase):
         )
         data.to_netcdf('test_no_temperature_variation.nc')
 
-        temperature = TemperatureComponent('test_no_temperature_variation.nc', self.mask_path)
-        anomalies = temperature.std_t90(self.reference_period)
+        temperature = TemperatureComponent('test_no_temperature_variation.nc',
+            self.mask_path, percentile=90, extremum='max', above_thresholds=True)
+        anomalies = temperature.calculate_component(self.reference_period)
 
         self.assertTrue(np.all(np.isnan(anomalies['t2m'])), "Anomalies should be NaN when there is no temperature variation.")
         os.remove('test_no_temperature_variation.nc')
@@ -114,8 +114,9 @@ class TestTemperature(unittest.TestCase):
         )
         data.to_netcdf('test_constant_temperature.nc')
 
-        temperature = TemperatureComponent('test_constant_temperature.nc', self.mask_path)
-        anomalies = temperature.std_t90(self.reference_period)
+        temperature = TemperatureComponent('test_constant_temperature.nc',
+            self.mask_path, percentile=90, extremum='max', above_thresholds=True )
+        anomalies = temperature.calculate_component(self.reference_period)
 
         self.assertTrue(np.all(np.isnan(anomalies['t2m'])), "Anomalies should be NaN when temperature is constant.")
         os.remove('test_constant_temperature.nc')
@@ -138,16 +139,24 @@ class TestTemperature(unittest.TestCase):
         )
         data.to_netcdf('test_random_temperature_variation.nc')
 
-        temperature = TemperatureComponent('test_random_temperature_variation.nc', self.mask_path)
-        anomalies = temperature.std_t90(self.reference_period)
+        temperature = TemperatureComponent('test_random_temperature_variation.nc', self.mask_path, 
+                                           percentile = 90, extremum='max', above_thresholds=True)
+
+        anomalies = temperature.calculate_component(self.reference_period)
 
         self.assertIsInstance(anomalies, xr.Dataset)
         os.remove('test_random_temperature_variation.nc')
 
     def test_temperature_component(self):
-        temp_component = TemperatureComponent(self.t2m_path, self.mask_path_bis)
-        calculated_anomalies_t90 = temp_component.std_t90(('1960-01-01', '1961-12-31'), area=True)
-        calculated_anomalies_t10 = temp_component.std_t10(('1960-01-01', '1961-12-31'), area=True)
+        temp_component_10 = TemperatureComponent(self.t2m_path,
+                                                self.mask_path_bis, percentile = 10, 
+                                                extremum='min', above_thresholds=False)
+        temp_component_90 = TemperatureComponent(self.t2m_path,
+                                                self.mask_path_bis, percentile = 90, extremum='max',
+                                                above_thresholds=True)
+
+        calculated_anomalies_t90 = temp_component_90.calculate_component(('1960-01-01', '1961-12-31'), area=True)
+        calculated_anomalies_t10 = temp_component_10.calculate_component(('1960-01-01', '1961-12-31'), area=True)
 
         reference_anomalies_t90 = xr.open_dataarray(self.reference_anomalies_t90_path)
         reference_anomalies_t10 = xr.open_dataarray(self.reference_anomalies_t10_path)

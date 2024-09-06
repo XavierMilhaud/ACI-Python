@@ -1,6 +1,3 @@
-import pandas as pd
-from pandas.tseries.offsets import MonthEnd
-
 import aci.components.precipitation as pc
 import aci.components.wind as wc
 import aci.components.sealevel as sl
@@ -40,7 +37,12 @@ class ActuarialClimateIndex:
             reference_period (tuple): Tuple containing the start and end dates of the
             reference period.
         """
-        self.temperature_component = tc.TemperatureComponent(temperature_data_path, mask_data_path)
+        self.temperature90_component = tc.TemperatureComponent(temperature_data_path, mask_data_path,
+                                                                percentile=90, extremum='max', 
+                                                                above_thresholds=True)
+        self.temperature10_component = tc.TemperatureComponent(temperature_data_path, mask_data_path,
+                                                                percentile=10, extremum='min', 
+                                                                above_thresholds=False)
         self.precipitation_component = pc.PrecipitationComponent(precipitation_data_path,
                                                                  mask_data_path)
         self.drought_component = dc.DroughtComponent(precipitation_data_path, mask_data_path)
@@ -67,13 +69,12 @@ class ActuarialClimateIndex:
         """
         factor = 1 if factor is None else factor
 
-        components = [self.drought_component, self.wind_component, self.precipitation_component]
-
+        components = [self.drought_component, self.wind_component, self.precipitation_component,
+                      self.temperature10_component, self.temperature90_component]
+        
         data_arrays = list(map(lambda component : component.calculate_component(self.reference_period, True), components))
-        data_arrays.append(self.temperature_component.std_t90(self.reference_period, True))
-        data_arrays.append(self.temperature_component.std_t10(self.reference_period, True))
 
-        variables = ['drought','wind','precipitation','t90','t10']
+        variables = ['drought','wind','precipitation','t10','t90']
         data_arrays_with_variable_names = zip(data_arrays, variables)
 
         dataframes = list(map(lambda data_array : u.reduce_dataarray_to_dataframe(data_array[0], data_array[1]), data_arrays_with_variable_names))
@@ -82,15 +83,15 @@ class ActuarialClimateIndex:
         dataframes.append(
             u.reduce_sealevel_over_region(sea_level)
         )
-        # Merge DataFrames
+
         aci_composites = u.merge_dataframes(dataframes)
 
         # Calculate ACI
         aci_composites["ACI"] = (aci_composites["t90"]
-                                 - aci_composites["t10"]
-                                 + aci_composites["precipitation"]
-                                 + aci_composites["drought"]
-                                 + factor * aci_composites["sealevel"]
-                                 + aci_composites["wind"]) / 6
+                                    - aci_composites["t10"]
+                                    + aci_composites["precipitation"]
+                                    + aci_composites["drought"]
+                                    + factor * aci_composites["sealevel"]
+                                    + aci_composites["wind"]) / 6
 
         return aci_composites

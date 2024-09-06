@@ -6,10 +6,7 @@ import os
 import sys
 import warnings
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from components.precipitation import PrecipitationComponent
-
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+from aci.components.precipitation import PrecipitationComponent
 
 
 class TestPrecipitation(unittest.TestCase):
@@ -44,7 +41,7 @@ class TestPrecipitation(unittest.TestCase):
 
         # Ajout des nouveaux tests
         self.reference_period_bis = ('2000-01-01', '2000-12-31')
-        self.data_dir = '../data/tests_data/tests_data_prec_bis'
+        self.data_dir = 'data/tests_data/tests_data_prec_bis'
 
     def tearDown(self):
         """

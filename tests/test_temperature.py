@@ -6,10 +6,7 @@ import os
 import sys
 import warnings
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from components.temperature import TemperatureComponent
-
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+from aci.components.temperature import TemperatureComponent
 
 
 class TestTemperature(unittest.TestCase):
@@ -45,7 +42,7 @@ class TestTemperature(unittest.TestCase):
 
         # Construction des chemins d'accès aux données de test stockées
 
-        data_dir = '../data/tests_data/tests_data_temperature'
+        data_dir = 'data/tests_data/tests_data_temperature'
         self.t2m_path = os.path.join(data_dir, 'test1_t2m.nc')
         self.mask_path_bis = os.path.join(data_dir, 'test1_mask.nc')
         self.reference_anomalies_t90_path = os.path.join(data_dir, 'test1_reference_anomalies_t90.nc')

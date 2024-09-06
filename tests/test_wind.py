@@ -6,11 +6,8 @@ import os
 import sys
 import warnings
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from components.wind import WindComponent
+from aci.components.wind import WindComponent
 
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-warnings.filterwarnings("ignore", category=FutureWarning)
 
 class TestWindComponent(unittest.TestCase):
 
@@ -52,7 +49,7 @@ class TestWindComponent(unittest.TestCase):
         # Setting up testing parameters for last method
 
         self.reference_period_bis = ('2000-01-01', '2000-12-31')
-        self.data_dir = '../data/tests_data/tests_data_wind'
+        self.data_dir = 'data/tests_data/tests_data_wind'
 
     def tearDown(self):
         """

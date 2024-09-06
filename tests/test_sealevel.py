@@ -4,8 +4,7 @@ import pandas as pd
 import numpy as np
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from components.sealevel import SeaLevelComponent
+from aci.components.sealevel import SeaLevelComponent
 
 
 class TestSeaLevelComponent(unittest.TestCase):
@@ -18,7 +17,7 @@ class TestSeaLevelComponent(unittest.TestCase):
         self.study_period = ('1960-01-01', '1969-12-31')
         self.reference_period = ('1960-01-01', '1964-12-31')
         self.sea_level_component = SeaLevelComponent(self.country_abrev, self.study_period, self.reference_period)
-        self.data_path = "../data/sealevel_data_USA"
+        self.data_path = "data/sealevel_data_USA"
 
         # Creating test data directory and files
         if not os.path.exists(self.data_path):
@@ -113,8 +112,9 @@ class TestSeaLevelComponent(unittest.TestCase):
         """
         for test_case in self.test_cases:
             with self.subTest(test_case=test_case):
-                sea_level_data_path = f'../data/tests_data/tests_data_sealevel/{test_case}_sea_level_test_data.csv'
-                reference_anomalies_path = f'../data/tests_data/tests_data_sealevel/{test_case}_reference_anomalies.csv'
+                path_ = f'data/tests_data/tests_data_sealevel/{test_case}_' 
+                sea_level_data_path = path_ + 'sea_level_test_data.csv'
+                reference_anomalies_path = path_ + 'reference_anomalies.csv'
 
                 # Lire les données de niveau de la mer
                 sea_level_data = pd.read_csv(sea_level_data_path, index_col='Corrected_Date', parse_dates=True)

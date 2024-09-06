@@ -1,12 +1,13 @@
 import pandas as pd
 from pandas.tseries.offsets import MonthEnd
 
-import components.precipitation as pc
-import components.wind as wc
-import components.sealevel as sl
-import components.drought as dc
-import components.temperature as tc
-import utils as u
+import aci.components.precipitation as pc
+import aci.components.wind as wc
+import aci.components.sealevel as sl
+import aci.components.drought as dc
+import aci.components.temperature as tc
+import aci.utils as u
+
 
 class ActuarialClimateIndex:
     """

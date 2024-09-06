@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-from components.component import Component
+from aci.components.component import Component
 
 
 class TemperatureComponent(Component):

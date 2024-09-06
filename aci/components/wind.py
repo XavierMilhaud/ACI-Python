@@ -1,6 +1,6 @@
 import xarray as xr
 import numpy as np
-from components.component import Component
+from aci.components.component import Component
 
 
 class WindComponent(Component):

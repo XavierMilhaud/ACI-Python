@@ -15,8 +15,8 @@ clean:
 
 test:
 	# Exécuter tous les tests dans ./tests
-	cd tests && python -m unittest discover -s . -v
+	python -m unittest discover -v
 
 coverage:
 	# Exécuter tous les tests dans ./tests
-	cd tests && python -m coverage run -m unittest && python -m coverage report 
+	python -m coverage run -m unittest && python -m coverage report 

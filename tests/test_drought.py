@@ -6,10 +6,7 @@ import os
 import sys
 import warnings
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../aci')))
-from components.drought import DroughtComponent
-
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+from aci.components.drought import DroughtComponent
 
 
 class TestDrought(unittest.TestCase):
@@ -144,9 +141,10 @@ class TestDrought(unittest.TestCase):
         """
         for test_case in self.test_cases:
             with self.subTest(test_case=test_case):
-                precipitation_path = f'../data/tests_data/tests_data_drought/{test_case}_precipitation_test_data.nc'
-                mask_path = f'../data/tests_data/tests_data_drought/{test_case}_mask_test_data.nc'
-                reference_anomalies_path = f'../data/tests_data/tests_data_drought/{test_case}_reference_anomalies.nc'
+                path_ = f'data/tests_data/tests_data_drought/{test_case}_' 
+                precipitation_path = path_ + 'precipitation_test_data.nc'
+                mask_path = path_ + 'mask_test_data.nc'
+                reference_anomalies_path = path_ + 'reference_anomalies.nc'
 
                 drought_component = DroughtComponent(precipitation_path, mask_path)
 

@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 import numpy as np
-import request_sealevel_data as gd
-from components.component import Component
+import aci.request_sealevel_data as gd
+from aci.components.component import Component
 
 
 class SeaLevelComponent(Component):
@@ -56,7 +56,7 @@ class SeaLevelComponent(Component):
             Tuple containing the start and end date of the reference period (YYYY-MM-DD).
         """
         gd.main(country_abrev)
-        self.directory = f"../data/sealevel_data_{country_abrev}"
+        self.directory = f"data/sealevel_data_{country_abrev}"
         self.study_period = study_period
         self.reference_period = reference_period
 

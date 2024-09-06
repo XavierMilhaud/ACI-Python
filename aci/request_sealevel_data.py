@@ -8,7 +8,7 @@ import sys
 
 # Constants
 URL = "https://psmsl.org/data/obtaining/rlr.monthly.data/rlr_monthly.zip"
-DESTINATION_DIR = "../data/required_data"
+DESTINATION_DIR = "data/required_data"
 ZIP_FILE_PATH = os.path.join(DESTINATION_DIR, "rlr_monthly.zip")
 EXTRACT_PATH = os.path.join(DESTINATION_DIR, "rlr_monthly")
 CSV_FILE_PATH = os.path.join(DESTINATION_DIR, 'psmsl_data.csv')
@@ -64,7 +64,7 @@ def copy_and_rename_files_by_country(abbreviation, df):
     df : pd.DataFrame
         The DataFrame containing the file information.
     """
-    target_dir = f'../data/sealevel_data_{abbreviation}'
+    target_dir = f'data/sealevel_data_{abbreviation}'
 
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)

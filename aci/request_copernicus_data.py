@@ -127,23 +127,6 @@ class Era5var:
             print("Merge failed with return code", result.returncode)
             print("Error:", result.stderr)
 
-    # def requestMask(self, iso):
-    #     """
-    #     Extracts a mask (grid of longitudes and latitudes) for a given country.
-
-    #     Args:
-    #         iso (str): ISO abbreviation of the country name (e.g., 'FR' for France).
-
-    #     Returns:
-    #         xr.Dataset: The mask dataset.
-    #     """
-    #     cmask = xr.open_dataset("required_data/countries_gridded_0.1deg_v0.1.nc")
-    #     cmaskvar = cmask.variables['iso'].to_numpy()
-    #     number = np.where(cmaskvar == iso)[0][0]
-    #     mask = cmask.sel(iso=number)
-    #     return mask
-
-
 if __name__ == "__main__":
     test = Era5var('PartOfParis', [49, 1, 48, 3], '1983-2023', 'total_precipitation', monthly=True)
     test.request_data()

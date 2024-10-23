@@ -20,9 +20,10 @@ class TemperatureComponent(Component):
         Parameters:
         - temperature_data_path (str): Path to the dataset containing temperature data.
         - mask_data_path (str): Path to the dataset containing mask data.
-        
-        Complexity:
-        O(T) for loading and initializing temperature and mask data, where T is the size of the temperature dataset.
+        - percentile (float): percentile chosen for the thresholds.
+        - extremum (str): specifies whether to find 'min' or 'max' temperature.
+        - above_thresholds (bool): if True counts the values above the percentile, if False under the thresholds.
+
         """
         temperature_data = xr.open_dataset(temperature_data_path)
         mask_data = xr.open_dataset(mask_data_path).rename({'lon': 'longitude', 'lat': 'latitude'})
@@ -49,9 +50,6 @@ class TemperatureComponent(Component):
 
         Returns:
         - xarray.DataArray: Daily min or max temperatures.
-
-        Complexity:
-        O(N), where N is the number of time steps in the selected period.
         """
         if period == "day":
             temperature = self.temperature_days
@@ -78,9 +76,6 @@ class TemperatureComponent(Component):
 
         Returns:
         - xarray.DataArray: Percentiles for each day of the year.
-
-        Complexity:
-        O(N), where N is the number of time steps in the reference period.
         """
         if tempo == "day":
             rolling_window_size = 80

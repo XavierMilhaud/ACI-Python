@@ -68,11 +68,6 @@ class SeaLevelComponent(Component):
         -------
         pd.DataFrame
             A DataFrame containing the concatenated data from all files.
-
-        Complexity
-        ----------
-        O(N * M)
-        where N is the number of files and M is the number of rows per file.
         """
         dataframes = []
         for filename in os.listdir(self.directory):
@@ -105,11 +100,6 @@ class SeaLevelComponent(Component):
         -------
         pd.DataFrame
             The DataFrame with corrected date format.
-
-        Complexity
-        ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
         """
         month_mapping = {
             "0417": "01", "125": "02", "2083": "03", "2917": "04", "375": "05",
@@ -149,11 +139,6 @@ class SeaLevelComponent(Component):
         -------
         pd.DataFrame
             The cleaned DataFrame.
-
-        Complexity
-        ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
         """
         return data.replace(-99999.0, np.nan)
 
@@ -174,11 +159,6 @@ class SeaLevelComponent(Component):
         -------
         pd.Series
             A Series containing the monthly statistics.
-
-        Complexity
-        ----------
-        O(N)
-        where N is the number of rows in the reference period DataFrame.
         """
         reference_period_mask = (data.index >= reference_period[0]) & (data.index < reference_period[1])
         data_ref = data.loc[reference_period_mask]
@@ -213,11 +193,6 @@ class SeaLevelComponent(Component):
         -------
         pd.DataFrame
             The standardized DataFrame.
-
-        Complexity
-        ----------
-        O(N)
-        where N is the number of rows in the study period DataFrame.
         """
         study_period_mask = (data.index >= study_period[0]) & (data.index < study_period[1])
         data_study = data.loc[study_period_mask]
@@ -239,11 +214,6 @@ class SeaLevelComponent(Component):
         -------
         pd.DataFrame
             The fully processed and standardized DataFrame.
-
-        Complexity
-        ----------
-        O(N * M)
-        where N is the number of rows and M is the number of columns in the final standardized DataFrame.
         """
         sea_level_data = self.load_data()
         sea_level_data = self.correct_date_format(sea_level_data)
@@ -263,11 +233,6 @@ class SeaLevelComponent(Component):
             The DataFrame containing the sea level data.
         window : int, optional
             The window size for calculating the rolling mean (default is 60).
-
-        Complexity
-        ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
         """
         data.rolling(window, min_periods=30, center=True).mean().plot()
 
@@ -284,11 +249,6 @@ class SeaLevelComponent(Component):
         -------
         xr.DataArray
             The converted xarray.
-
-        Complexity
-        ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
         """
         return data.to_xarray()
 
@@ -305,11 +265,6 @@ class SeaLevelComponent(Component):
         -------
         pd.DataFrame
             The resampled DataFrame.
-
-        Complexity
-        ----------
-        O(N)
-        where N is the number of rows in the DataFrame.
         """
         return data.resample('3M').mean()
 
@@ -323,10 +278,5 @@ class SeaLevelComponent(Component):
             The data to be saved.
         filename : str
             The name of the file to save the data.
-
-        Complexity
-        ----------
-        O(N)
-        where N is the number of rows in the DataArray.
         """
         data.to_netcdf(filename)

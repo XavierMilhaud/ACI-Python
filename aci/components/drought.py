@@ -29,11 +29,6 @@ class DroughtComponent(Component):
             Path to a directory containing NetCDF files or a single NetCDF file.
         mask_path : str, optional
             Path to the dataset containing mask data. Default is None.
-
-        Complexity
-        ----------
-        O(P) for loading and initializing precipitation and mask data,
-        where P is the size of the precipitation dataset.
         """
         # Determine if the source is a directory or a single file
         if os.path.isdir(precipitation_source):
@@ -60,11 +55,6 @@ class DroughtComponent(Component):
         -------
         xarray.DataArray
             Maximum number of consecutive dry days.
-
-        Complexity
-        ----------
-        O(N) for calculating cumulative sums and transformations,
-        where N is the number of time steps in the dataset.
         """
         preci = self.apply_mask("tp") if self.mask is not None else self.array
         precipitation_per_day = preci['tp'].resample(time='d').sum()
@@ -94,11 +84,6 @@ class DroughtComponent(Component):
         -------
         xarray.DataArray
             Interpolated monthly CDD values.
-
-        Complexity
-        ----------
-        O(Y * M) where Y is the number of years and M is the number of months,
-        as interpolation is done for each month of each year.
         """
         monthly_values = []
         years = pd.to_datetime(max_days_drought_per_year.time.values).year
@@ -150,12 +135,6 @@ class DroughtComponent(Component):
         -------
         xarray.DataArray
             Standardized maximum number of consecutive dry days.
-
-        Complexity
-        ----------
-        O(N + R) for calculating maximum consecutive dry days and
-        standardizing, where N is the number of time steps and R is the
-        size of the reference period.
         """
         max_days_drought_per_year = self.max_consecutive_dry_days()
 

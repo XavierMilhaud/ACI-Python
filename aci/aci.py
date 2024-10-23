@@ -62,10 +62,6 @@ class ActuarialClimateIndex:
 
         Returns:
             pd.DataFrame: DataFrame containing the calculate_aci values.
-
-        Complexity:
-            Time: O(n) where n is the number of data points in the study period.
-            Space: O(n) for storing intermediate DataFrames.
         """
         factor = 1 if factor is None else factor
 

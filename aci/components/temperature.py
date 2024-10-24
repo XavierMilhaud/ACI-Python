@@ -12,7 +12,7 @@ class TemperatureComponent(Component):
         mask_data (xarray.Dataset): Dataset containing mask data.
     """
 
-    def __init__(self, temperature_data_path:str, mask_data_path:str,
+    def __init__(self, temperature_data_path:str, mask_path:str=None,
     percentile:float, extremum:str, above_thresholds:bool=True):
         """
         Initialize the TemperatureComponent object.
@@ -25,10 +25,9 @@ class TemperatureComponent(Component):
         - above_thresholds (bool): if True counts the values above the percentile, if False under the thresholds.
 
         """
-        temperature_data = xr.open_dataset(temperature_data_path)
-        mask_data = xr.open_dataset(mask_data_path).rename({'lon': 'longitude', 'lat': 'latitude'})
-        super().__init__(temperature_data, mask_data, temperature_data_path)
-        temperature = self.apply_mask("t2m")
+  
+        super().__init__(temperature_data_path, mask_path, var_name='t2m')
+        temperature = self.array
         self.temperature_days = temperature.isel(
             time=temperature.time.dt.hour.isin([6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
         )
@@ -65,7 +64,7 @@ class TemperatureComponent(Component):
         else:
             raise ValueError("extremum must be 'min' or 'max'")
 
-    def calculate_percentiles(self, n, reference_period, tempo):
+    def calculate_percentiles(self, n, reference_period, part_of_day):
         """
         Compute percentiles for day or night temperatures over a reference period.
 
@@ -77,12 +76,12 @@ class TemperatureComponent(Component):
         Returns:
         - xarray.DataArray: Percentiles for each day of the year.
         """
-        if tempo == "day":
+        if part_of_day == "day":
             rolling_window_size = 80
             temperature_reference = self.temperature_days.sel(
                 time=slice(reference_period[0], reference_period[1])
             )
-        elif tempo == "night":
+        elif part_of_day == "night":
             rolling_window_size = 40
             temperature_reference = self.temperature_nights.sel(
                 time=slice(reference_period[0], reference_period[1])

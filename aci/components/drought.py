@@ -19,33 +19,18 @@ class DroughtComponent(Component):
         Dataset containing mask data, if provided.
     """
 
-    def __init__(self, precipitation_source, mask_path=None):
+    def __init__(self, precipitation_data_path, mask_path=None):
         """
         Initialize the DroughtComponent object.
 
         Parameters
         ----------
-        precipitation_source : str
+        precipitation_data_path : str
             Path to a directory containing NetCDF files or a single NetCDF file.
         mask_path : str, optional
             Path to the dataset containing mask data. Default is None.
         """
-        # Determine if the source is a directory or a single file
-        if os.path.isdir(precipitation_source):
-            # Load multiple NetCDF files using open_mfdataset
-            precipitation = xr.open_mfdataset(
-                os.path.join(precipitation_source, "*.nc"), combine='by_coords'
-            )
-        else:
-            # Load a single NetCDF file
-            precipitation = xr.open_dataset(precipitation_source)
-
-        # Load mask data if provided
-        mask = None
-        if mask_path:
-            mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
-
-        super().__init__(precipitation, mask, precipitation_source)
+        super().__init__(precipitation_data_path, mask_path,var_name='tp')
 
     def max_consecutive_dry_days(self):
         """
@@ -56,7 +41,7 @@ class DroughtComponent(Component):
         xarray.DataArray
             Maximum number of consecutive dry days.
         """
-        preci = self.apply_mask("tp") if self.mask is not None else self.array
+        preci = self.array
         precipitation_per_day = preci['tp'].resample(time='d').sum()
 
         # Rechunk data after resampling for optimal performance

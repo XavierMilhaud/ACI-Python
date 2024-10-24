@@ -13,7 +13,7 @@ class WindComponent(Component):
     - mask (xarray.Dataset): Dataset containing mask data.
     """
 
-    def __init__(self, u10_path, v10_path, mask_path):
+    def __init__(self, u10_path, v10_path, mask_path=None):
         """
         Initialize the WindComponent object.
 
@@ -22,11 +22,14 @@ class WindComponent(Component):
         - v10_path (str): Path to the dataset containing wind v-component data.
         - mask_path (str): Path to the dataset containing mask data.
         """
-        u10 = xr.open_dataset(u10_path)
-        v10 = xr.open_dataset(v10_path)
-        mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
-        super().__init__(u10, mask, u10_path)
-        self.v10 = v10
+        self.u10 = xr.open_dataset(u10_path)
+        self.v10 = xr.open_dataset(v10_path)
+        if mask_path is None:
+            self.mask = None
+        else : 
+            self.mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
+            self.u10 = Component._apply_mask(self.u10, self.mask, 'u10')
+            self.v10 = Component._apply_mask(self.v10, self.mask, 'v10')
 
     def wind_power(self, reference_period=None):
         """
@@ -39,13 +42,7 @@ class WindComponent(Component):
         Returns:
         - xarray.DataArray: Daily wind power.
         """
-        u10 = self.apply_mask("u10")
-        temp = self.array
-        self.array = self.v10
-        v10 = self.apply_mask("v10")
-        self.array = temp
-
-        ws = np.sqrt(u10.u10**2 + v10.v10**2)
+        ws = np.sqrt(self.u10.u10**2 + self.v10.v10**2)
         rho = 1.23  # Air density constant
         dailymean_ws = ws.resample(time='D').mean()
         wind_power = 0.5 * rho * dailymean_ws**3

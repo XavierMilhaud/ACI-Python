@@ -13,25 +13,21 @@ class Component:
 
     """
 
-    def __init__(self, array, mask, file_name):
+    def __init__(self, data_path, mask_path, var_name:str='var'):
         """
         Initializes the Component with primary data and mask data.
 
-        Args:
-            array (xarray.Dataset): The dataset containing the primary data.
-            mask (xarray.Dataset): The dataset containing the mask data.
-            file_name (str): The file name of the dataset.
+        Parameters:
+        - data_path (str): The dataset containing the primary data.
+        - mask_path (xarray.Dataset): The dataset containing the mask data.
         """
-        # Ignore specific warning about is_monotonic
-        warnings.filterwarnings(
-            "ignore",
-            category=FutureWarning,
-            message="is_monotonic is deprecated and will be removed in a" +
-            " future version. Use is_monotonic_increasing instead.")
 
-        self.array = array
-        self.mask = mask
-        self.file_name = file_name
+        self.array = xr.open_dataset(data_path)
+        if mask_path is None:
+            self.mask = None
+        else : 
+            self.mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
+            self.array = self.apply_mask(var_name)
 
     def apply_mask(self, var_name, threshold=0.8):
         """
@@ -44,11 +40,26 @@ class Component:
         Returns:
         - xarray.Dataset: Dataset with the mask applied to the specified variable.
         """
-        if self.array is None or self.mask is None:
+        return Component._apply_mask(self.array, self.mask, var_name, threshold)
+
+    def _apply_mask(array:xr.Dataset, mask:xr.Dataset, var_name:str, threshold:float=0.8):
+        """
+        Apply a mask to the dataset.
+
+        Parameters:
+        - array (xr.Dataset): Variable name in the dataset to which the mask is applied.
+        - mask (xr.Dataset): Variable name in the dataset to which the mask is applied.
+        - var_name (str): Variable name in the dataset to which the mask is applied.
+        - threshold (float): Threshold value for the mask. Default is 0.8.
+
+        Returns:
+        - xarray.Dataset: Dataset with the mask applied to the specified variable.
+        """
+        if array is None or mask is None:
             raise ValueError("Data not loaded. Please ensure precipitation and mask data are loaded.")
 
-        f_temp = self.array.copy()
-        f_temp['mask'] = self.mask.country
+        f_temp = array.copy()
+        f_temp['mask'] = mask.country
 
         # Create a mask based on the threshold
         country_mask = f_temp['mask'] >= threshold
@@ -62,13 +73,13 @@ class Component:
         """
         Standardizes a given metric based on a reference period.
 
-        Args:
-            metric (xarray.DataArray): The metric to be standardized.
-            reference_period (tuple): A tuple containing the start and end dates of the reference period.
-            area (bool): If True, calculate the area-averaged standardized metric. Default is None.
+        Parameters :
+        - metric (xarray.DataArray): The metric to be standardized.
+        - reference_period (tuple): A tuple containing the start and end dates of the reference period.
+        - area (bool): If True, calculate the area-averaged standardized metric. Default is None.
 
         Returns:
-            xarray.DataArray: The standardized metric.
+        - xarray.DataArray: The standardized metric.
         """
         reference = metric.sel(time=slice(reference_period[0], reference_period[1]))
         time_index = metric.time.dt.month
@@ -85,12 +96,12 @@ class Component:
         """
         Calculates the rolling sum of a variable over a specified window size.
 
-        Args:
-            var_name (str): The variable name in the data to calculate the rolling sum.
-            window_size (int): The size of the rolling window.
+        Parameters :
+        - var_name (str): The variable name in the data to calculate the rolling sum.
+        - window_size (int): The size of the rolling window.
 
         Returns:
-            xarray.DataArray: The rolling sum of the variable.
+        - xarray.DataArray: The rolling sum of the variable.
         """
         data = self.apply_mask(var_name)
         var = data[var_name]

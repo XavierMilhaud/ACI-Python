@@ -11,25 +11,24 @@ class PrecipitationComponent(Component):
         mask (xarray.Dataset): The dataset containing the mask data.
     """
 
-    def __init__(self, precipitation_path, mask_path):
+    def __init__(self, precipitation_data_path, mask_path=None):
         """
         Initializes the PrecipitationComponent with precipitation and mask data.
 
-        Args:
-            precipitation_path (str): The file path of the precipitation data.
-            mask_path (str): The file path of the mask data.
+        Parameters:
+        - precipitation_path (str): The file path of the precipitation data.
+        - mask_path (str): The file path of the mask data.
         """
-        precipitation = xr.open_dataset(precipitation_path)
-        mask = xr.open_dataset(mask_path).rename({'lon': 'longitude', 'lat': 'latitude'})
-        super().__init__(precipitation, mask, precipitation_path)
+        super().__init__(precipitation_data_path, mask_path,var_name='tp')
 
     def calculate_maximum_precipitation_over_window(self, var_name:str='tp', window_size:int=5, season:bool=False):
         """
         Calculates the maximum monthly precipitation over a specified window size.
 
-        Args:
-            var_name (str): The variable name in the precipitation data to calculate the monthly maximum.
-            window_size (int): The size of the rolling window in days.
+        Parameters :
+        - var_name (str): The variable name in the precipitation data to calculate the monthly maximum.
+        - window_size (int): The size of the rolling window in days.
+        - season (bool): If True calculate the maximum precipitation over season and not monthly, default to False
 
         Returns:
             xarray.DataArray: The maximum monthly precipitation.
@@ -47,12 +46,12 @@ class PrecipitationComponent(Component):
         """
         Calculates the anomaly of maximum monthly precipitation relative to a reference period.
 
-        Args:
-            var_name (str): The variable name in the precipitation data.
-            window_size (int): The size of the rolling window in days.
-            reference_period (tuple): A tuple containing the start and end dates of
-            the reference period (e.g., ('1961-01-01', '1989-12-31')).
-            area (bool): If True, calculate the area-averaged anomaly. Default is None.
+        Parameters :
+        - var_name (str): The variable name in the precipitation data.
+        - window_size (int): The size of the rolling window in days.
+        - reference_period (tuple): A tuple containing the start and end dates of
+        - the reference period (e.g., ('1961-01-01', '1989-12-31')).
+        - area (bool): If True, calculate the area-averaged anomaly. Default is None.
 
         Returns:
             xarray.DataArray: The anomaly of maximum monthly precipitation.

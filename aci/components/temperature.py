@@ -12,7 +12,7 @@ class TemperatureComponent(Component):
         mask_data (xarray.Dataset): Dataset containing mask data.
     """
 
-    def __init__(self, temperature_data_path:str, mask_path:str=None,
+    def __init__(self, temperature_data_path:str, mask_path,
     percentile:float, extremum:str, above_thresholds:bool=True):
         """
         Initialize the TemperatureComponent object.

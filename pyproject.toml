@@ -6,6 +6,10 @@ authors = ["XavierMilhaud"]
 license = "MIT"
 readme = "README.md"
 
+packages = [
+    { include = 'aci' },
+]
+
 [tool.poetry.dependencies]
 python = "^3.12"
 xarray = "2024.02.0"
@@ -15,6 +19,7 @@ netCDF4 = "^1.7.2"
 dask = "^2024.10.0"
 psutil = "^6.1.0"
 pandas = "^2.2.3"
+cdsapi = "^0.7.4"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.6.4"

@@ -136,6 +136,39 @@ numpy = "*"
 doc = ["gitpython", "numpydoc", "sphinx"]
 
 [[package]]
+name = "cads-api-client"
+version = "1.4.7"
+description = "CADS API Python client"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "cads_api_client-1.4.7-py3-none-any.whl", hash = "sha256:a0b59908eba7d2f029a384ff7ec94014552333ea47169d067f650686d2c75c19"},
+    {file = "cads_api_client-1.4.7.tar.gz", hash = "sha256:ce43bb1184045515425d3235f8e673b8d4c75b3ca5c389af1107dd005e398875"},
+]
+
+[package.dependencies]
+attrs = "*"
+multiurl = ">=0.3.2"
+requests = "*"
+typing-extensions = "*"
+
+[[package]]
+name = "cdsapi"
+version = "0.7.4"
+description = "Climate Data Store API"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "cdsapi-0.7.4-py2.py3-none-any.whl", hash = "sha256:5f70b40e8e777ae956deb6a13d1a3c8d8f099bada91919228adb27c34464144a"},
+    {file = "cdsapi-0.7.4.tar.gz", hash = "sha256:a32fedb6cf6c5683e488652fadbf5b956561f573e98d0ec474e2d8381fe24a34"},
+]
+
+[package.dependencies]
+cads-api-client = ">=1.4.7"
+requests = ">=2.5.0"
+tqdm = "*"
+
+[[package]]
 name = "certifi"
 version = "2024.8.30"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -1157,6 +1190,22 @@ files = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
+
+[[package]]
+name = "multiurl"
+version = "0.3.2"
+description = "A package to download several URL as one, as well as supporting multi-part URLs"
+optional = false
+python-versions = "*"
+files = [
+    {file = "multiurl-0.3.2.tar.gz", hash = "sha256:8d412bf8efe823916d289523a0891884dabdac3b30d9304f2f915b0fa94ab4e2"},
+]
+
+[package.dependencies]
+python-dateutil = "*"
+pytz = "*"
+requests = "*"
+tqdm = "*"
 
 [[package]]
 name = "myst-nb"
@@ -2371,6 +2420,26 @@ files = [
 ]
 
 [[package]]
+name = "tqdm"
+version = "4.66.5"
+description = "Fast, Extensible Progress Meter"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tqdm-4.66.5-py3-none-any.whl", hash = "sha256:90279a3770753eafc9194a0364852159802111925aa30eb3f9d85b0e805ac7cd"},
+    {file = "tqdm-4.66.5.tar.gz", hash = "sha256:e1020aef2e5096702d8a025ac7d16b1577279c9d63f8375b63083e9a5f0fcbad"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+dev = ["pytest (>=6)", "pytest-cov", "pytest-timeout", "pytest-xdist"]
+notebook = ["ipywidgets (>=6)"]
+slack = ["slack-sdk"]
+telegram = ["requests"]
+
+[[package]]
 name = "traitlets"
 version = "5.14.3"
 description = "Traitlets Python configuration system"
@@ -2481,4 +2550,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "47ca795974cadf22426ae16d1b2938a849d37b10090a7709203ab452b32327ed"
+content-hash = "d60df7ed9c8c6de55edc560ab2e2a8c272f6e411c8b66e08723f014a58a05348"

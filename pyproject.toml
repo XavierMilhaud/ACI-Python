@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "aci"
 version = "0.0.1"
-description = "This package provides a way to calculate Actuarial Climate Index based on meteorological data."
+description = "This package provides a way to calculate Actuaries Climate Index based on meteorological data."
 authors = ["XavierMilhaud"]
 license = "MIT"
 readme = "README.md"

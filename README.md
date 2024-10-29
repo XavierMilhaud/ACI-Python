@@ -1,4 +1,4 @@
-# Actuarial Climate Index Package
+# Actuaries Climate Index Package
 
    Currently, the package is organized into different classes, with each class dedicated to a specific component required for the index calculation. Further optimization will be done later. The source files implementing these classes are located in the aci/ directory. The aci.py file is used to calculate the Actuarial Climate Index. Refer to the notebooks for detailed usage instructions.
 

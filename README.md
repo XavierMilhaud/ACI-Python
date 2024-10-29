@@ -2,7 +2,42 @@
 
    Currently, the package is organized into different classes, with each class dedicated to a specific component required for the index calculation. Further optimization will be done later. The source files implementing these classes are located in the aci/ directory. The aci.py file is used to calculate the Actuarial Climate Index. Refer to the notebooks for detailed usage instructions.
 
-For now the package is not yet published on PyPi, you have to install it manually in order to use it. Since the project requires certain dependencies to exectue correctly, it is recommended to create a virtual environment using poetry for testing purpose
+## Installation
+
+The package is not yet published on PyPi, you have to install it manually in order to use it. 
+
+## Usage
+
+### Downloading the data
+To download the data we used the [Climate Data Store from Copernicus](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview). To download data, you can create an account and create request manually to extract the data, or you can follow the documentation they provide to create an API key and use it to extract automatically data. Note that it could take several days to complete the data download depending on the traffic on their platform and the amount of data asked.
+
+
+### Calculate the index for a country
+
+When you finished to download the data, you can start the calculous of the Actuaries Climated Index for your geographical zone specifying the paths to your datasets. You also need to provide the 3 letters code of your country in order to extract the tide gauge data for the sea component. 
+
+```python
+from aci.aci import ActuarialClimateIndex
+
+aci = ActuarialClimateIndex(
+    temperature_data_path='data/required_data/temperature_1960-1970.nc',
+    precipitation_data_path='data/required_data/precipitation_1960-1970.nc',
+    wind_u10_data_path='data/required_data/wind_u10_1960-1970.nc',
+    wind_v10_data_path='data/required_data/wind_v10_1960-1970.nc',
+    country_abbrev='FRA',
+    study_period=('1980-01-01', '2020-12-31'),
+    reference_period=('1961-01-01', '1990-12-31')
+)
+aci_index = aci.calculate_aci()
+
+print(f"Actuarial Climate Index: {aci_index}")
+```
+
+You can also calculate specific component of the ACI by following the documentation pdf inside the docs folder of the repository.
+
+## Development
+
+Since the project requires certain dependencies to exectue correctly, it is recommended to create a virtual environment using poetry for testing purpose
 
 ```bash
 poetry install

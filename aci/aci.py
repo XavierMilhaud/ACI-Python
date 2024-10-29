@@ -6,7 +6,7 @@ import aci.components.temperature as tc
 import aci.utils as u
 
 
-class ActuarialClimateIndex:
+class ActuariesClimateIndex:
     """
     Class to calculate the Actuaries Climate Index (ACI) from its components.
 

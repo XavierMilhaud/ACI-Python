@@ -6,10 +6,10 @@ import os
 import sys
 import warnings
 
-from aci.aci import ActuarialClimateIndex
+from aci.aci import ActuariesClimateIndex
 
 
-class TestActuarialClimateIndex(unittest.TestCase):
+class TestActuariesClimateIndex(unittest.TestCase):
 
     def setUp(self):
         self.mask_path = 'test_mask.nc'
@@ -72,7 +72,7 @@ class TestActuarialClimateIndex(unittest.TestCase):
         os.remove(self.wind_v10_path)
 
     def test_aci_calculation(self):
-        aci = ActuarialClimateIndex(
+        aci = ActuariesClimateIndex(
             self.temperature_path,
             self.precipitation_path,
             self.wind_u10_path,

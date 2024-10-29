@@ -6,12 +6,14 @@ import zipfile
 import argparse
 import sys
 
+from aci.datasets import load_psmsl_data
+
 # Constants
 URL = "https://psmsl.org/data/obtaining/rlr.monthly.data/rlr_monthly.zip"
 DESTINATION_DIR = "data/required_data"
 ZIP_FILE_PATH = os.path.join(DESTINATION_DIR, "rlr_monthly.zip")
 EXTRACT_PATH = os.path.join(DESTINATION_DIR, "rlr_monthly")
-CSV_FILE_PATH = os.path.join(DESTINATION_DIR, 'psmsl_data.csv')
+#CSV_FILE_PATH = os.path.join(DESTINATION_DIR, 'psmsl_data.csv')
 SOURCE_DIR = os.path.join(EXTRACT_PATH, 'data')
 
 
@@ -45,7 +47,7 @@ def load_dataframe():
         The loaded DataFrame.
     """
     try:
-        df = pd.read_csv(CSV_FILE_PATH)
+        df = load_psmsl_data()
         print("DataFrame loaded successfully.")
         return df
     except FileNotFoundError:

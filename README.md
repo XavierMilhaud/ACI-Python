@@ -17,9 +17,9 @@ To download the data we used the [Climate Data Store from Copernicus](https://cd
 When you finished to download the data, you can start the calculous of the Actuaries Climated Index for your geographical zone specifying the paths to your datasets. You also need to provide the 3 letters code of your country in order to extract the tide gauge data for the sea component. 
 
 ```python
-from aci.aci import ActuarialClimateIndex
+from aci.aci import ActuariesClimateIndex
 
-aci = ActuarialClimateIndex(
+aci = ActuariesClimateIndex(
     temperature_data_path='data/required_data/temperature_1960-1970.nc',
     precipitation_data_path='data/required_data/precipitation_1960-1970.nc',
     wind_u10_data_path='data/required_data/wind_u10_1960-1970.nc',

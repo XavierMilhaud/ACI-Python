@@ -19,4 +19,4 @@ test:
 
 coverage:
 	# Exécuter tous les tests dans ./tests
-	python -m coverage run -m unittest && python -m coverage report 
+	python -m coverage run -m unittest && python -m coverage xml 

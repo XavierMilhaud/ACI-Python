@@ -4,7 +4,9 @@
 
 ## Installation
 
-The package is not yet published on PyPi, you have to install it manually in order to use it. 
+```bash
+pip install x_aci
+```
 
 ## Usage
 
@@ -30,7 +32,7 @@ aci = ActuariesClimateIndex(
 )
 aci_index = aci.calculate_aci()
 
-print(f"Actuarial Climate Index: {aci_index}")
+print(f"Actuaries Climate Index: {aci_index}")
 ```
 
 You can also calculate specific component of the ACI by following the documentation pdf inside the docs folder of the repository.

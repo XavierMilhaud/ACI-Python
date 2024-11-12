@@ -2,7 +2,7 @@ from importlib import resources
 import pandas as pd
 
 def load_psmsl_data():
-    with resources.path("aci.data", "psmsl_data.csv") as f:
-        data_file_path = f
-        df = pd.read_csv(data_file_path)
+    data_file_path = resources.files("aci.data").joinpath("psmsl_data.csv")
+    with data_file_path.open() as f:
+        df = pd.read_csv(f)
     return df

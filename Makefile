@@ -13,3 +13,10 @@ clean:
 	# Afficher un message de succès
 	@echo -e "\033[32mNettoyage terminé avec succès\033[0m"
 
+test:
+	# Exécuter tous les tests dans ./tests
+	python -m unittest discover -v
+
+coverage:
+	# Exécuter tous les tests dans ./tests
+	python -m coverage run -m unittest && python -m coverage xml 

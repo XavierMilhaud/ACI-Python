@@ -62,6 +62,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+
       - name: Build package
         run: poetry build
 

@@ -1,4 +1,4 @@
-# Actuaries Climate Index Package
+# Actuarial Climate Indices Package
 
    Currently, the package is organized into different classes, with each class dedicated to a specific component required for the index calculation. Further optimization will be done later. The source files implementing these classes are located in the aci/ directory. The aci.py file is used to calculate the Actuarial Climate Index. Refer to the notebooks for detailed usage instructions.
 
@@ -16,7 +16,7 @@ To download the data we used the [Climate Data Store from Copernicus](https://cd
 
 ### Calculate the index for a country
 
-When you finished to download the data, you can start the calculous of the Actuaries Climated Index for your geographical zone specifying the paths to your datasets. You also need to provide the 3 letters code of your country in order to extract the tide gauge data for the sea component. 
+When you finished to download the data, you can start the calculous of the Actuarial Climated Index for your geographical zone specifying the paths to your datasets. You also need to provide the 3 letters code of your country in order to extract the tide gauge data for the sea component. 
 
 ```python
 from aci.aci import ActuariesClimateIndex
@@ -32,7 +32,7 @@ aci = ActuariesClimateIndex(
 )
 aci_index = aci.calculate_aci()
 
-print(f"Actuaries Climate Index: {aci_index}")
+print(f"Actuarial Climate Index: {aci_index}")
 ```
 
 You can also calculate specific component of the ACI by following the documentation pdf inside the docs folder of the repository.

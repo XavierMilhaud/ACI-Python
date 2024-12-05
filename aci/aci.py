@@ -6,9 +6,9 @@ import aci.components.temperature as tc
 import aci.utils as u
 
 
-class ActuariesClimateIndex:
+class ActuarialClimateIndex:
     """
-    Class to calculate the Actuaries Climate Index (ACI) from its components.
+    Class to calculate the Actuarial Climate Index (ACI) from its components.
 
     Attributes:
         temperature_component (TemperatureComponent): Instance of the TemperatureComponent class.
@@ -55,7 +55,7 @@ class ActuariesClimateIndex:
 
     def calculate_aci(self, factor=None):
         """
-        Calculate the Actuaries Climate Index (calculate_aci).
+        Calculate the Actuarial Climate Index (calculate_aci).
 
         Parameters:
             factor (float): Erosion factor, equals 1 by default.
